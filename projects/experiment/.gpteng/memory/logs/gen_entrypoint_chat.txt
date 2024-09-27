@@ -1,0 +1,135 @@
+
+2024-09-27T19:13:30.752934
+================================ System Message ================================
+
+You will get information about a codebase that is currently on disk in the current folder.
+The user will ask you to write a script that runs the code in a specific way.
+You will answer with code blocks that include all the necessary terminal commands.
+Do not install globally. Do not use sudo.
+Do not explain the code, just give the commands.
+Do not use placeholders, use example values (like . for a folder argument) if necessary.
+
+
+================================ Human Message =================================
+
+
+        Make a unix script that
+        a) installs dependencies
+        b) runs all necessary parts of the codebase (in parallel if necessary)
+        
+Information about the codebase:
+
+```
+File: main.py
+1 import torch
+2 import torch.nn as nn
+3 import torch.optim as optim
+4 from torchvision import datasets, transforms
+5 from torch.utils.data import DataLoader
+6 from sklearn.metrics import accuracy_score
+7 
+8 # Define the neural network model
+9 class SimpleNN(nn.Module):
+10     def __init__(self):
+11         super(SimpleNN, self).__init__()
+12         self.fc1 = nn.Linear(28 * 28, 128)
+13         self.fc2 = nn.Linear(128, 64)
+14         self.fc3 = nn.Linear(64, 10)
+15 
+16     def forward(self, x):
+17         x = x.view(-1, 28 * 28)  # Flatten the input
+18         x = torch.relu(self.fc1(x))
+19         x = torch.relu(self.fc2(x))
+20         x = self.fc3(x)
+21         return x
+22 
+23 # Function to train the model
+24 def train(model, device, train_loader, optimizer, criterion, epoch):
+25     model.train()
+26     for batch_idx, (data, target) in enumerate(train_loader):
+27         data, target = data.to(device), target.to(device)
+28         optimizer.zero_grad()
+29         output = model(data)
+30         loss = criterion(output, target)
+31         loss.backward()
+32         optimizer.step()
+33         if batch_idx % 100 == 0:
+34             print(f'Train Epoch: {epoch} [{batch_idx * len(data)}/{len(train_loader.dataset)} '
+35                   f'({100. * batch_idx / len(train_loader):.0f}%)]\tLoss: {loss.item():.6f}')
+36 
+37 # Function to test the model
+38 def test(model, device, test_loader, criterion):
+39     model.eval()
+40     test_loss = 0
+41     correct = 0
+42     all_preds = []
+43     all_targets = []
+44     with torch.no_grad():
+45         for data, target in test_loader:
+46             data, target = data.to(device), target.to(device)
+47             output = model(data)
+48             test_loss += criterion(output, target).item()  # Sum up batch loss
+49             pred = output.argmax(dim=1, keepdim=True)  # Get the index of the max log-probability
+50             correct += pred.eq(target.view_as(pred)).sum().item()
+51             all_preds.extend(pred.cpu().numpy())
+52             all_targets.extend(target.cpu().numpy())
+53 
+54     test_loss /= len(test_loader.dataset)
+55     accuracy = accuracy_score(all_targets, all_preds)
+56     print(f'\nTest set: Average loss: {test_loss:.4f}, Accuracy: {correct}/{len(test_loader.dataset)} '
+57           f'({100. * correct / len(test_loader.dataset):.0f}%)\n')
+58     print(f'Accuracy Score: {accuracy:.4f}')
+59 
+60 def main():
+61     # Check if CUDA is available
+62     use_cuda = torch.cuda.is_available()
+63     device = torch.device("cuda" if use_cuda else "cpu")
+64 
+65     # Define transformations for the training and testing data
+66     transform = transforms.Compose([
+67         transforms.ToTensor(),
+68         transforms.Normalize((0.1307,), (0.3081,))
+69     ])
+70 
+71     # Load the MNIST dataset
+72     train_dataset = datasets.MNIST('./data', train=True, download=True, transform=transform)
+73     test_dataset = datasets.MNIST('./data', train=False, transform=transform)
+74 
+75     # Create data loaders
+76     train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
+77     test_loader = DataLoader(test_dataset, batch_size=1000, shuffle=False)
+78 
+79     # Initialize the model, loss function, and optimizer
+80     model = SimpleNN().to(device)
+81     criterion = nn.CrossEntropyLoss()
+82     optimizer = optim.Adam(model.parameters())
+83 
+84     # Train and test the model
+85     for epoch in range(1, 11):
+86         train(model, device, train_loader, optimizer, criterion, epoch)
+87         test(model, device, test_loader, criterion)
+88 
+89 if __name__ == '__main__':
+90     main()
+
+File: requirements.txt
+1 torch
+2 torchvision
+3 scikit-learn
+
+File: using
+1 pip install -r requirements.txt
+
+```
+
+================================== Ai Message ==================================
+
+```sh
+#!/bin/bash
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run the code
+python main.py
+```

@@ -1,0 +1,32 @@
+2024-09-27 20:44:09,519 INFO    MainThread:43874 [wandb_setup.py:_flush():77] Current SDK version is 0.18.1
+2024-09-27 20:44:09,519 INFO    MainThread:43874 [wandb_setup.py:_flush():77] Configure stats pid to 43874
+2024-09-27 20:44:09,519 INFO    MainThread:43874 [wandb_setup.py:_flush():77] Loading settings from /Users/joro/.config/wandb/settings
+2024-09-27 20:44:09,519 INFO    MainThread:43874 [wandb_setup.py:_flush():77] Loading settings from /Users/joro/src/ai-engineer/projects/experiment_2/wandb/settings
+2024-09-27 20:44:09,519 INFO    MainThread:43874 [wandb_setup.py:_flush():77] Loading settings from environment variables: {}
+2024-09-27 20:44:09,519 INFO    MainThread:43874 [wandb_setup.py:_flush():77] Applying setup settings: {'mode': None, '_disable_service': None}
+2024-09-27 20:44:09,519 INFO    MainThread:43874 [wandb_setup.py:_flush():77] Inferring run settings from compute environment: {'program_relpath': 'projects/experiment_2/main.py', 'program_abspath': '/Users/joro/src/ai-engineer/projects/experiment_2/main.py', 'program': '/Users/joro/src/ai-engineer/projects/experiment_2/main.py'}
+2024-09-27 20:44:09,519 INFO    MainThread:43874 [wandb_setup.py:_flush():77] Applying login settings: {}
+2024-09-27 20:44:09,519 INFO    MainThread:43874 [wandb_init.py:_log_setup():532] Logging user logs to /Users/joro/src/ai-engineer/projects/experiment_2/wandb/run-20240927_204409-0npevc0x/logs/debug.log
+2024-09-27 20:44:09,519 INFO    MainThread:43874 [wandb_init.py:_log_setup():533] Logging internal logs to /Users/joro/src/ai-engineer/projects/experiment_2/wandb/run-20240927_204409-0npevc0x/logs/debug-internal.log
+2024-09-27 20:44:09,519 INFO    MainThread:43874 [wandb_init.py:init():616] calling init triggers
+2024-09-27 20:44:09,519 INFO    MainThread:43874 [wandb_init.py:init():623] wandb.init called with sweep_config: {}
+config: {'learning_rate': 0.005, 'epochs': 2, 'architecture_description': 'Conv(1, 32, 3x3).ReLU().MaxPool(2x2) -> Conv(32, 64, 3x3).ReLU().MaxPool(2x2) -> FC(64*7*7, 128).ReLU() -> FC(128, 10)'}
+2024-09-27 20:44:09,519 INFO    MainThread:43874 [wandb_init.py:init():666] starting backend
+2024-09-27 20:44:09,520 INFO    MainThread:43874 [wandb_init.py:init():670] setting up manager
+2024-09-27 20:44:09,521 INFO    MainThread:43874 [backend.py:_multiprocessing_setup():105] multiprocessing start_methods=spawn,fork,forkserver, using: spawn
+2024-09-27 20:44:09,523 INFO    MainThread:43874 [wandb_init.py:init():678] backend started and connected
+2024-09-27 20:44:09,528 INFO    MainThread:43874 [wandb_init.py:init():773] updated telemetry
+2024-09-27 20:44:09,552 INFO    MainThread:43874 [wandb_init.py:init():806] communicating run to backend with 90.0 second timeout
+2024-09-27 20:44:09,857 INFO    MainThread:43874 [wandb_init.py:init():857] starting run threads in backend
+2024-09-27 20:44:09,936 INFO    MainThread:43874 [wandb_run.py:_console_start():2459] atexit reg
+2024-09-27 20:44:09,936 INFO    MainThread:43874 [wandb_run.py:_redirect():2307] redirect: wrap_raw
+2024-09-27 20:44:09,936 INFO    MainThread:43874 [wandb_run.py:_redirect():2372] Wrapping output streams.
+2024-09-27 20:44:09,936 INFO    MainThread:43874 [wandb_run.py:_redirect():2397] Redirects installed.
+2024-09-27 20:44:09,938 INFO    MainThread:43874 [wandb_init.py:init():900] run started, returning control to user process
+2024-09-27 20:45:01,702 INFO    MainThread:43874 [wandb_run.py:_finish():2158] finishing run bjarnih/ai-engineer/0npevc0x
+2024-09-27 20:45:01,703 INFO    MainThread:43874 [wandb_run.py:_atexit_cleanup():2422] got exitcode: 0
+2024-09-27 20:45:01,703 INFO    MainThread:43874 [wandb_run.py:_restore():2404] restore
+2024-09-27 20:45:01,703 INFO    MainThread:43874 [wandb_run.py:_restore():2410] restore done
+2024-09-27 20:45:03,935 INFO    MainThread:43874 [wandb_run.py:_footer_history_summary_info():4037] rendering history
+2024-09-27 20:45:03,935 INFO    MainThread:43874 [wandb_run.py:_footer_history_summary_info():4069] rendering summary
+2024-09-27 20:45:03,947 INFO    MainThread:43874 [wandb_run.py:_footer_sync_info():3996] logging synced files

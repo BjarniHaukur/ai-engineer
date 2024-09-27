@@ -1,0 +1,26 @@
+Create a python script for training a classification model on mnist using pytorch lightning.
+Use weights and biases to log the progress.
+Make sure the architecture description describes the implemented architecture properly. E.g the layers and parameters.
+
+#Init
+wandb.init(
+    name=run_name,
+    project="ai-engineer",
+    config={
+        "learning_rate": lr,
+        "epochs": epochs,
+        "architecture_description": architecture_description,
+    },
+    group="direction_n/idea_n/run_n"
+)
+
+#Logging
+wandb.log({
+    "loss": loss,
+    "accuracy": accuracy,
+    "epoch": epoch,
+})
+
+
+Put all the code in one runnable python script called main.py
+

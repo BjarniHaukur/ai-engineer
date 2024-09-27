@@ -1,0 +1,37 @@
+{
+  "os": "macOS-14.5-arm64-arm-64bit",
+  "python": "3.12.6",
+  "startedAt": "2024-09-27T18:44:09.524241Z",
+  "program": "/Users/joro/src/ai-engineer/projects/experiment_2/main.py",
+  "codePath": "projects/experiment_2/main.py",
+  "git": {
+    "remote": "git@github.com:BjarniHaukur/ai-engineer.git",
+    "commit": "767eaa656aab3949f3a0306d8874c680172be863"
+  },
+  "email": "bjarnihaukur11@gmail.com",
+  "root": "/Users/joro/src/ai-engineer/projects/experiment_2",
+  "host": "n167-p161.eduroam.kth.se",
+  "username": "joro",
+  "executable": "/Users/joro/src/ai-engineer/.venv/bin/python",
+  "codePathLocal": "main.py",
+  "cpu_count": 10,
+  "cpu_count_logical": 10,
+  "disk": {
+    "/": {
+      "total": "994662584320",
+      "used": "401555353600"
+    }
+  },
+  "memory": {
+    "total": "34359738368"
+  },
+  "cpu": {
+    "count": 10,
+    "countLogical": 10
+  },
+  "gpuapple": {
+    "gpuType": "Apple M1 Pro",
+    "vendor": "sppci_vendor_Apple",
+    "cores": 16
+  }
+}

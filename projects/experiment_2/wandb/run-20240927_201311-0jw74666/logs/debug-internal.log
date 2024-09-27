@@ -1,0 +1,18 @@
+{"time":"2024-09-27T20:13:11.360878+02:00","level":"INFO","msg":"using version","core version":"0.18.1"}
+{"time":"2024-09-27T20:13:11.360902+02:00","level":"INFO","msg":"created symlink","path":"/Users/joro/src/ai-engineer/projects/experiment_2/wandb/run-20240927_201311-0jw74666/logs/debug-core.log"}
+{"time":"2024-09-27T20:13:11.36139+02:00","level":"INFO","msg":"using version","core version":"0.18.1"}
+{"time":"2024-09-27T20:13:11.361575+02:00","level":"INFO","msg":"created symlink","path":"/Users/joro/src/ai-engineer/projects/experiment_2/wandb/run-20240927_201311-0jw74666/logs/debug-core.log"}
+{"time":"2024-09-27T20:13:11.366119+02:00","level":"INFO","msg":"created new stream","id":"0jw74666"}
+{"time":"2024-09-27T20:13:11.366162+02:00","level":"INFO","msg":"stream: started","id":"0jw74666"}
+{"time":"2024-09-27T20:13:11.366193+02:00","level":"INFO","msg":"writer: Do: started","stream_id":{"value":"0jw74666"}}
+{"time":"2024-09-27T20:13:11.36623+02:00","level":"INFO","msg":"sender: started","stream_id":{"value":"0jw74666"}}
+{"time":"2024-09-27T20:13:11.366207+02:00","level":"INFO","msg":"handler: started","stream_id":{"value":"0jw74666"}}
+{"time":"2024-09-27T20:13:11.669417+02:00","level":"INFO","msg":"wandb-core","!BADKEY":null}
+{"time":"2024-09-27T20:13:11.671179+02:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2024-09-27T20:15:47.763176+02:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2024-09-27T20:15:47.763405+02:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2024-09-27T20:15:52.209175+02:00","level":"INFO","msg":"stream: closing","id":"0jw74666"}
+{"time":"2024-09-27T20:15:52.209227+02:00","level":"INFO","msg":"handler: closed","stream_id":{"value":"0jw74666"}}
+{"time":"2024-09-27T20:15:52.209262+02:00","level":"INFO","msg":"writer: Close: closed","stream_id":{"value":"0jw74666"}}
+{"time":"2024-09-27T20:15:52.209292+02:00","level":"INFO","msg":"sender: closed","stream_id":{"value":"0jw74666"}}
+{"time":"2024-09-27T20:15:52.209409+02:00","level":"INFO","msg":"stream: closed","id":"0jw74666"}

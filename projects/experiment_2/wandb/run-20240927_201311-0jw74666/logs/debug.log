@@ -1,0 +1,32 @@
+2024-09-27 20:13:11,358 INFO    MainThread:39095 [wandb_setup.py:_flush():77] Current SDK version is 0.18.1
+2024-09-27 20:13:11,358 INFO    MainThread:39095 [wandb_setup.py:_flush():77] Configure stats pid to 39095
+2024-09-27 20:13:11,358 INFO    MainThread:39095 [wandb_setup.py:_flush():77] Loading settings from /Users/joro/.config/wandb/settings
+2024-09-27 20:13:11,358 INFO    MainThread:39095 [wandb_setup.py:_flush():77] Loading settings from /Users/joro/src/ai-engineer/projects/experiment_2/wandb/settings
+2024-09-27 20:13:11,358 INFO    MainThread:39095 [wandb_setup.py:_flush():77] Loading settings from environment variables: {}
+2024-09-27 20:13:11,359 INFO    MainThread:39095 [wandb_setup.py:_flush():77] Applying setup settings: {'mode': None, '_disable_service': None}
+2024-09-27 20:13:11,359 INFO    MainThread:39095 [wandb_setup.py:_flush():77] Inferring run settings from compute environment: {'program_relpath': 'projects/experiment_2/main.py', 'program_abspath': '/Users/joro/src/ai-engineer/projects/experiment_2/main.py', 'program': '/Users/joro/src/ai-engineer/projects/experiment_2/main.py'}
+2024-09-27 20:13:11,359 INFO    MainThread:39095 [wandb_setup.py:_flush():77] Applying login settings: {}
+2024-09-27 20:13:11,359 INFO    MainThread:39095 [wandb_init.py:_log_setup():532] Logging user logs to /Users/joro/src/ai-engineer/projects/experiment_2/wandb/run-20240927_201311-0jw74666/logs/debug.log
+2024-09-27 20:13:11,359 INFO    MainThread:39095 [wandb_init.py:_log_setup():533] Logging internal logs to /Users/joro/src/ai-engineer/projects/experiment_2/wandb/run-20240927_201311-0jw74666/logs/debug-internal.log
+2024-09-27 20:13:11,359 INFO    MainThread:39095 [wandb_init.py:init():616] calling init triggers
+2024-09-27 20:13:11,359 INFO    MainThread:39095 [wandb_init.py:init():623] wandb.init called with sweep_config: {}
+config: {'learning_rate': 0.001, 'epochs': 10, 'architecture_description': 'Simple CNN for MNIST'}
+2024-09-27 20:13:11,359 INFO    MainThread:39095 [wandb_init.py:init():666] starting backend
+2024-09-27 20:13:11,359 INFO    MainThread:39095 [wandb_init.py:init():670] setting up manager
+2024-09-27 20:13:11,359 INFO    MainThread:39095 [backend.py:_multiprocessing_setup():105] multiprocessing start_methods=spawn,fork,forkserver, using: spawn
+2024-09-27 20:13:11,360 INFO    MainThread:39095 [wandb_init.py:init():678] backend started and connected
+2024-09-27 20:13:11,364 INFO    MainThread:39095 [wandb_init.py:init():773] updated telemetry
+2024-09-27 20:13:11,380 INFO    MainThread:39095 [wandb_init.py:init():806] communicating run to backend with 90.0 second timeout
+2024-09-27 20:13:11,665 INFO    MainThread:39095 [wandb_init.py:init():857] starting run threads in backend
+2024-09-27 20:13:11,744 INFO    MainThread:39095 [wandb_run.py:_console_start():2459] atexit reg
+2024-09-27 20:13:11,744 INFO    MainThread:39095 [wandb_run.py:_redirect():2307] redirect: wrap_raw
+2024-09-27 20:13:11,744 INFO    MainThread:39095 [wandb_run.py:_redirect():2372] Wrapping output streams.
+2024-09-27 20:13:11,744 INFO    MainThread:39095 [wandb_run.py:_redirect():2397] Redirects installed.
+2024-09-27 20:13:11,746 INFO    MainThread:39095 [wandb_init.py:init():900] run started, returning control to user process
+2024-09-27 20:15:47,762 INFO    MainThread:39095 [wandb_run.py:_finish():2158] finishing run bjarnih/ai-engineer/0jw74666
+2024-09-27 20:15:47,762 INFO    MainThread:39095 [wandb_run.py:_atexit_cleanup():2422] got exitcode: 0
+2024-09-27 20:15:47,762 INFO    MainThread:39095 [wandb_run.py:_restore():2404] restore
+2024-09-27 20:15:47,762 INFO    MainThread:39095 [wandb_run.py:_restore():2410] restore done
+2024-09-27 20:15:52,194 INFO    MainThread:39095 [wandb_run.py:_footer_history_summary_info():4037] rendering history
+2024-09-27 20:15:52,196 INFO    MainThread:39095 [wandb_run.py:_footer_history_summary_info():4069] rendering summary
+2024-09-27 20:15:52,207 INFO    MainThread:39095 [wandb_run.py:_footer_sync_info():3996] logging synced files
