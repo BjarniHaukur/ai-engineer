@@ -86,7 +86,9 @@ if __name__ == "__main__":
             assert idea_json, "No JSON found in the idea"
             
             prev_ideas.append(idea_json)
-        
+            
+            
+            # perhaps just return a list of ideas, to then be e.g. filtered before creating the folders
             
             # create the folder, save the idea (maybe _json is enough, otherwise we could ask for a more thorough writeup)
             
