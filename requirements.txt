@@ -1,2 +1,6 @@
 dotenv
 
+torch
+torchvision
+torchaudio
+einops
