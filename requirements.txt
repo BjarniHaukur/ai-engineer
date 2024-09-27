@@ -1,3 +1,2 @@
-ell-ai
 dotenv
 
