@@ -46,7 +46,6 @@ In <JSON>, provide the new idea in JSON format with the following fields:
 
 Be cautious and realistic on your ratings.
 This JSON will be automatically parsed, so ensure the format is precise.
-You will have {num_ideas} rounds to iterate on the idea, but do not need to use them all.
 """
 
 
@@ -74,7 +73,6 @@ if __name__ == "__main__":
                 task_description=prompt["task_description"],
                 code=code,
                 prev_ideas_string=yaml.dump(prev_ideas),
-                num_ideas=args.num_ideas
             )
             msg = [
                 {"role": "system", "content": prompt["system"]},
@@ -88,11 +86,11 @@ if __name__ == "__main__":
             assert idea_json, "No JSON found in the idea"
             
             prev_ideas.append(idea_json)
+        
             
+            # create the folder, save the idea (maybe _json is enough, otherwise we could ask for a more thorough writeup)
             
-            
-            
-            # maybe do some reflection here
+            # maybe do some reflection here, perhaps o1 does that well enough already
         
         
         
