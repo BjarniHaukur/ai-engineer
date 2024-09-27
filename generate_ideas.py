@@ -1,6 +1,12 @@
 import os
+import yaml
+from tqdm import tqdm   
 from pathlib import Path
 
+from utils.completion import post
+from utils.extract import extract_json_between_markers
+
+DIRECTIONS_PATH = Path("research_directions")
 
 
 IDEA_PROMPT = """{task_description}
@@ -40,17 +46,75 @@ In <JSON>, provide the new idea in JSON format with the following fields:
 
 Be cautious and realistic on your ratings.
 This JSON will be automatically parsed, so ensure the format is precise.
-You will have {num_reflections} rounds to iterate on the idea, but do not need to use them all.
+You will have {num_ideas} rounds to iterate on the idea, but do not need to use them all.
 """
 
 
+if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--direction", type=str, required=False, help="Specific research direction to generate ideas for")
+    parser.add_argument("--num_ideas", type=int, default=5)
+    args = parser.parse_args()
 
+    if args.direction:
+        assert args.direction in os.listdir(DIRECTIONS_PATH), f"Direction {args.direction} not found in {DIRECTIONS_PATH}"
+        direction_paths = [DIRECTIONS_PATH / args.direction]
+    else:
+        direction_paths = [d for d in DIRECTIONS_PATH.iterdir() if d.is_dir()]
+        
+    
+    for direction_path in direction_paths:        
+        with open(direction_path / "prompt.yaml", "r") as f: prompt = yaml.safe_load(f) or []
+        with open(direction_path / "utils.py", "r") as f: code = f.read() or []
+        with open(direction_path / "ideas.yaml", "r") as f: prev_ideas = yaml.safe_load(f) or []
+    
+        for _ in tqdm(range(args.num_ideas)):
+            idea_prompt = IDEA_PROMPT.format(
+                task_description=prompt["task_description"],
+                code=code,
+                prev_ideas_string=yaml.dump(prev_ideas),
+                num_ideas=args.num_ideas
+            )
+            msg = [
+                {"role": "system", "content": prompt["system"]},
+                {"role": "user", "content": idea_prompt}
+            ]
+            
+            idea = post("openai/o1-preview-2024-09-12", msg)
 
-
-
-
-
-
+            # parse the ide
+            idea_json = extract_json_between_markers(idea)
+            assert idea_json, "No JSON found in the idea"
+            
+            prev_ideas.append(idea_json)
+            
+            
+            
+            
+            # maybe do some reflection here
+        
+        
+        
+        
+        
+        
+        
+            
+        
+            
+            
+            
+            
+            
+            
+            
+            
+        
+        
+    
+    
+    
 
 
 

@@ -1,4 +1,6 @@
 dotenv
+requests
+pyyaml
 
 torch
 torchvision
