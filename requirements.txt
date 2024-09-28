@@ -3,7 +3,7 @@ requests
 pyyaml
 tqdm
 PyMuPDF==1.23.8
-
+librosa
 torch
 torchvision
 torchaudio
