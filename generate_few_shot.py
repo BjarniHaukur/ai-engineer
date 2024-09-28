@@ -80,11 +80,15 @@ This JSON will be automatically parsed, so ensure the format is precise and that
 PAPER_REVIEW_PROMPT = """Review the following paper and provide an assessment of its feasibility and interestingness for potential implementation or further research.
 {paper_text}"""
 
+DIRECTIONS_PATH = Path("research_directions")
     
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Download, extract, and process a paper from arXiv.")
     parser.add_argument("arxiv_link", type=str, help="The full URL to the arXiv paper")
+    parser.add_argument("add_to", type=str, help="The research direction to add the few shot example to")
     args = parser.parse_args()
+    
+    assert args.add_to in os.listdir(DIRECTIONS_PATH), f"Direction {args.add_to} not found in {DIRECTIONS_PATH}"
     
     text = process_arxiv_paper(args.arxiv_link)
     
@@ -96,8 +100,10 @@ if __name__ == "__main__":
     
     review_json = extract_json(review)
     if review_json:
-        filename = f"{review_json['Name']}.yaml"
-        with open(filename, 'w') as file: yaml.dump(review_json, file, default_flow_style=False)
-        print(f"Review saved to {filename}")
+        few_shot_file = DIRECTIONS_PATH / args.add_to / "few_shot_ideas.yaml"
+        with open(few_shot_file, 'r') as file: existing_ideas = yaml.safe_load(file) or []
+        existing_ideas.append(review_json)
+        with open(few_shot_file, 'w') as file: yaml.dump(existing_ideas, file, default_flow_style=False)
+        print(f"New idea appended to {few_shot_file}")
     else:
         print("Failed to extract JSON from the review.")
