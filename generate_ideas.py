@@ -9,8 +9,11 @@ from utils.extract import extract, extract_json
 DIRECTIONS_PATH = Path("research_directions")
 
 IDEA_PROMPT = """{task_description}
-
 {data_description}
+
+<template.py>
+{template}
+</template.py>
 
 Here are the ideas that you have already generated:
 
@@ -56,13 +59,14 @@ def generate_ideas(direction:str, num_ideas=3)->tuple[list[dict], list[str]]:
        
     with open(DIRECTIONS_PATH / direction / "prompt.json", "r") as f: prompt = json.load(f)
     with open(DIRECTIONS_PATH / direction / "few_shot_ideas.json", "r") as f: few_shot_ideas = json.load(f)
-
+    with open(DIRECTIONS_PATH / direction / "template.py", "r") as f: template = f.read()
     ideas, thoughts = [], []
     
     for _ in range(num_ideas):
         idea_prompt = IDEA_PROMPT.format(
             task_description=prompt["task_description"],
             data_description=prompt["data_description"],
+            template=template,
             prev_ideas_string=json.dumps(few_shot_ideas) + json.dumps(ideas),
         )
         msg = [
