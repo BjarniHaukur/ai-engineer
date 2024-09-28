@@ -1,5 +1,5 @@
 import os
-import yaml
+import json
 from tqdm import tqdm   
 from pathlib import Path
 
@@ -9,8 +9,11 @@ from utils.extract import extract, extract_json
 DIRECTIONS_PATH = Path("research_directions")
 
 IDEA_PROMPT = """{task_description}
-
 {data_description}
+
+<template.py>
+{template}
+</template.py>
 
 Here are the ideas that you have already generated:
 
@@ -54,16 +57,17 @@ This JSON will be automatically parsed, so ensure the format is precise and that
 def generate_ideas(direction:str, num_ideas=3)->tuple[list[dict], list[str]]:
     assert direction in os.listdir(DIRECTIONS_PATH), f"Direction {direction} not found in {DIRECTIONS_PATH}"
        
-    with open(DIRECTIONS_PATH / direction / "prompt.yaml", "r") as f: prompt = yaml.safe_load(f) or []
-    with open(DIRECTIONS_PATH / direction / "few_shot_ideas.yaml", "r") as f: few_shot_ideas = yaml.safe_load(f) or []
-
+    with open(DIRECTIONS_PATH / direction / "prompt.json", "r") as f: prompt = json.load(f)
+    with open(DIRECTIONS_PATH / direction / "few_shot_ideas.json", "r") as f: few_shot_ideas = json.load(f)
+    with open(DIRECTIONS_PATH / direction / "template.py", "r") as f: template = f.read()
     ideas, thoughts = [], []
     
     for _ in range(num_ideas):
         idea_prompt = IDEA_PROMPT.format(
             task_description=prompt["task_description"],
             data_description=prompt["data_description"],
-            prev_ideas_string=yaml.dump(few_shot_ideas) + yaml.dump(ideas),
+            template=template,
+            prev_ideas_string=json.dumps(few_shot_ideas) + json.dumps(ideas),
         )
         msg = [
             {"role": "system", "content": prompt["system"]},
@@ -127,7 +131,7 @@ if __name__ == "__main__":
     for direction in directions:            
         direction_path = DIRECTIONS_PATH / direction
         
-        with open(direction_path / "ideas.yaml", "a") as f: yaml.dump(all_ideas[direction], f)
+        with open(direction_path / "ideas.json", "a") as f: json.dump(all_ideas[direction], f, indent=2)
         
         for idea, thought in zip(all_ideas[direction], all_thoughts[direction]):
             idea_path = direction_path / idea["Name"]

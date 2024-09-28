@@ -1,13 +1,11 @@
 # Generate the few_shot examples from pertinent papers
 
 import os
-import yaml
-from tqdm import tqdm
+import json
 from pathlib import Path
 
 from utils.completion import post
 from utils.extract import extract_json
-
 
 import requests
 import fitz  # PyMuPDF
@@ -52,8 +50,7 @@ SYSTEM_PROMPT = """You are an AI assistant that reviews research papers and prov
 Respond in the following format:
 
 REVIEW:```review
-<REVIEW>
-```
+<REVIEW>```
 
 ASSESSMENT JSON:
 ```json
@@ -100,14 +97,14 @@ if __name__ == "__main__":
     
     review_json = extract_json(review)
     if review_json:
-        few_shot_file = DIRECTIONS_PATH / args.add_to / "few_shot_ideas.yaml"
+        few_shot_file = DIRECTIONS_PATH / args.add_to / "few_shot_ideas.json"
         with open(few_shot_file, 'r') as file:
-            existing_ideas = yaml.safe_load(file) or []
+            existing_ideas = json.load(file)
         print(existing_ideas)
         existing_ideas.append(review_json)
         print(review_json)
         with open(few_shot_file, 'w') as file:
-            yaml.dump(existing_ideas, file, default_flow_style=False, sort_keys=False)
+            json.dump(existing_ideas, file, indent=2)
         print(f"New idea appended to {few_shot_file}")
     else:
         print("Failed to extract JSON from the review.")
