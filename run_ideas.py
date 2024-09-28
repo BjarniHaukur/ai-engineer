@@ -5,7 +5,7 @@ import multiprocessing
 
 def process_idea(idea, idx, research_direction):
     print(f"Running idea {idx}: {idea['Name']}")
-    run_idea(idea['Title'], idea['Experiment'], idea['Name'], research_direction)
+    run_idea(idea['Title'], f"{idea['Experiment']} {idea['Thought']}", idea['Name'], research_direction)
     print(f"Completed idea {idx}\n")
 
 if __name__ == '__main__':
