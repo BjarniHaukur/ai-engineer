@@ -25,8 +25,7 @@ Make sure any idea is not overfit the specific training dataset or model, and ha
 
 Respond in the following format:
 
-THOUGHT:
-```thought
+THOUGHT:```thought
 <THOUGHT>
 ```
 
@@ -61,7 +60,7 @@ def generate_ideas(direction:str, num_ideas=3)->tuple[list[dict], list[str]]:
 
     ideas, thoughts = [], []
     
-    for _ in tqdm(range(num_ideas)):
+    for _ in range(num_ideas):
         idea_prompt = IDEA_PROMPT.format(
             task_description=prompt["task_description"],
             code=code,
@@ -94,6 +93,8 @@ def sort_by_score(ideas:list[dict], thoughts:list[str])->tuple[list[dict], list[
     
 if __name__ == "__main__":
     import argparse
+    from concurrent.futures import ProcessPoolExecutor, as_completed
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--direction", type=str, required=False, help="Specific research direction to generate ideas for")
     parser.add_argument("--num_ideas", type=int, default=10)
@@ -105,20 +106,23 @@ if __name__ == "__main__":
         directions = [args.direction]
     else:
         directions = os.listdir(DIRECTIONS_PATH)
-        
     
-    ideas, thoughts = generate_ideas(directions[0], args.num_ideas)
-    ideas, thoughts = sort_by_score(ideas, thoughts)
-    ideas, thoughts = ideas[:args.top_k], thoughts[:args.top_k]
+    all_ideas = {}
+    all_thoughts = {}
     
-    # for idea, thought in zip(ideas, thoughts):
-    #     # create the folders and save
-        
-        
-    
-    print(ideas)
-    print("\n"*5)
-    print(thoughts)
+    with ProcessPoolExecutor() as executor:
+        future_to_direction = {executor.submit(generate_ideas, direction, args.num_ideas): direction for direction in directions}
+        for future in tqdm(as_completed(future_to_direction), total=len(directions)):
+            direction = future_to_direction[future]
+            try:
+                ideas, thoughts = future.result()
+                ideas, thoughts = sort_by_score(ideas, thoughts)
+                ideas, thoughts = ideas[:args.top_k], thoughts[:args.top_k]
+                all_ideas[direction] = ideas
+                all_thoughts[direction] = thoughts
+                print(f"Completed processing for direction: {direction}")
+            except Exception as exc:
+                print(f"Direction {direction} generated an exception: {exc}")
 
             
             
