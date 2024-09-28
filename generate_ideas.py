@@ -58,7 +58,7 @@ def generate_ideas(direction:str, num_ideas=3)->tuple[list[dict], list[str]]:
     with open(DIRECTIONS_PATH / direction / "few_shot_ideas.json", "r") as f: few_shot_ideas = json.load(f)
     ideas, thoughts = [], []
     
-    for _ in range(num_ideas):
+    for _ in tqdm(range(num_ideas)):
         idea_prompt = IDEA_PROMPT.format(
             task_description=prompt["task_description"],
             data_description=prompt["data_description"],
@@ -69,8 +69,9 @@ def generate_ideas(direction:str, num_ideas=3)->tuple[list[dict], list[str]]:
             {"role": "user", "content": idea_prompt}
         ]
         
-        idea = post("openai/o1-preview-2024-09-12", msg)
+        idea = post("openai/o1-preview-2024-09-12", mssg)
         # idea = post("openai/gpt-4o-2024-08-06", msg)
+        # idea = post("openai/gpt-4o-mini-2024-07-18", msg)
 
         idea_description = extract(idea, "thought")
         idea_json = extract_json(idea)
@@ -91,44 +92,30 @@ def sort_by_score(ideas:list[dict], thoughts:list[str])->tuple[list[dict], list[
     
 if __name__ == "__main__":
     import argparse
-    from concurrent.futures import ProcessPoolExecutor, as_completed
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--direction", type=str, required=False, help="Specific research direction to generate ideas for")
+    parser.add_argument("--direction", type=str, required=True, help="Specific research direction to generate ideas for")
     parser.add_argument("--num_ideas", type=int, default=10)
     parser.add_argument("--top_k", type=int, default=5)
     args = parser.parse_args()
     
-    if args.direction:
-        assert args.direction in os.listdir(DIRECTIONS_PATH), f"Direction {args.direction} not found in {DIRECTIONS_PATH}"
-        directions = [args.direction]
-    else:
-        directions = os.listdir(DIRECTIONS_PATH)
+
+    assert args.direction in os.listdir(DIRECTIONS_PATH), f"Direction {args.direction} not found in {DIRECTIONS_PATH}"
+    direction = args.direction
+    direction_path = DIRECTIONS_PATH / direction
+
+    print(f"Generating ideas for direction: {direction}")
+    ideas, thoughts = generate_ideas(direction, args.num_ideas)
+    ideas, thoughts = sort_by_score(ideas, thoughts)
+    ideas, thoughts = ideas[:args.top_k], thoughts[:args.top_k]
     
-    all_ideas = {}
-    all_thoughts = {}
+    for idea, thought in zip(ideas, thoughts):
+        idea["Thought"] = thought
     
-    with ProcessPoolExecutor() as executor:
-        future_to_direction = {executor.submit(generate_ideas, direction, args.num_ideas): direction for direction in directions}
-        for future in tqdm(as_completed(future_to_direction), total=len(directions)):
-            direction = future_to_direction[future]
-            try:
-                ideas, thoughts = future.result()
-                ideas, thoughts = sort_by_score(ideas, thoughts)
-                ideas, thoughts = ideas[:args.top_k], thoughts[:args.top_k]
-                all_ideas[direction] = ideas
-                all_thoughts[direction] = thoughts
-                print(f"Completed processing for direction: {direction}")
-            except Exception as exc:
-                print(f"Direction {direction} generated an exception: {exc}")
+    print(f"Completed processing for direction: {direction}")
+    
+    with open(direction_path / "ideas.json", "a") as f:
+        json.dump(ideas, f, indent=2)
 
-
-    for direction in directions:            
-        direction_path = DIRECTIONS_PATH / direction
-
-        for idea, thought in zip(all_ideas[direction], all_thoughts[direction]):
-            idea["Thought"] = thought
-        
-        with open(direction_path / "ideas.json", "a") as f: json.dump(all_ideas[direction], f, indent=2)
         
 
