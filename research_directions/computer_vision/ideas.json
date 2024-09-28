@@ -1,0 +1,42 @@
+[
+  {
+    "Name": "supervised_contrastive_cnn",
+    "Title": "Enhancing CNNs with Supervised Contrastive Learning for Improved Feature Representation",
+    "Experiment": "Modify the existing CNN model to include a projection head after the global average pooling layer to produce normalized embeddings suitable for contrastive learning. Implement the supervised contrastive loss function, utilizing label information to define positive and negative pairs within each batch. Adjust the training loop to compute both the cross-entropy loss for classification and the supervised contrastive loss for representation learning. Combine these losses into a total loss function weighted by a hyperparameter lambda. Experiment with different values of lambda and the temperature parameter tau to balance the losses and control the concentration of embeddings. Compare the modified model's performance on CIFAR-100 with the baseline model in terms of classification accuracy, convergence speed, and the quality of learned embeddings using metrics like t-SNE visualization or clustering analysis.",
+    "Interestingness": 9,
+    "Feasibility": 8,
+    "Novelty": 8
+  },
+  {
+    "Name": "multiscale_attention_cnn",
+    "Title": "Enhancing CNNs with Multi-Scale Feature Fusion and Attention Mechanisms for Image Classification",
+    "Experiment": "Modify the existing CNN model to include multiple convolutional branches, each processing the input with different kernel sizes (e.g., 3x3, 5x5, 7x7) to capture features at various scales. Implement an attention fusion module that learns to weight the outputs from each branch before combining them. Adjust the forward method to incorporate the parallel branches and the attention mechanism. Update the training loop to accommodate the new architecture. Train the modified model on CIFAR-100 and compare its performance in terms of classification accuracy and convergence speed with the baseline CNN model.",
+    "Interestingness": 9,
+    "Feasibility": 7,
+    "Novelty": 8
+  },
+  {
+    "Name": "multitask_selfsupervised_cnn",
+    "Title": "Enhancing CNN Performance with Multi-task Self-supervised Learning: A Rotation Prediction Auxiliary Task",
+    "Experiment": "Modify the existing CNN model to include an auxiliary rotation prediction head branching from the shared convolutional base. Implement data preprocessing to rotate input images by 0\u00b0, 90\u00b0, 180\u00b0, or 270\u00b0. Adjust the training loop to compute the combined loss function incorporating both classification and rotation prediction losses. Experiment with different values of the weighting hyperparameter \u03bb to balance the tasks. Compare the performance with the baseline model in terms of classification accuracy on CIFAR-100.",
+    "Interestingness": 8,
+    "Feasibility": 8,
+    "Novelty": 7
+  },
+  {
+    "Name": "capsule_network_cnn",
+    "Title": "Integrating Capsule Networks into CNNs for Enhanced Spatial Hierarchy Modeling",
+    "Experiment": "Modify the existing CNN model to include capsule layers after the convolutional base. Implement a Primary Capsules layer to convert convolutional feature maps into capsules and a Class Capsules layer for outputting class-specific capsules. Incorporate the dynamic routing algorithm between these layers. Adjust the forward method to include capsule transformations and routing. Replace the standard cross-entropy loss with the margin loss suitable for capsule networks. Optionally, add a reconstruction decoder network and include reconstruction loss as a regularization term. Update the training loop accordingly. Train the modified model on CIFAR-100 and compare its performance in terms of classification accuracy, convergence behavior, and robustness to spatial transformations against the baseline CNN model.",
+    "Interestingness": 9,
+    "Feasibility": 6,
+    "Novelty": 8
+  },
+  {
+    "Name": "anti_aliasing_cnn",
+    "Title": "Incorporating Anti-Aliasing Filters into CNNs for Enhanced Image Classification",
+    "Experiment": "Modify the CNN model to include anti-aliasing filters before downsampling operations. Implement low-pass filters (e.g., 3x3 averaging filters) before each max-pooling or strided convolution layer by adding convolutional layers that perform smoothing. Adjust the forward method to incorporate these filters. Train the modified model on CIFAR-100 using the current training loop, and compare its performance in terms of classification accuracy and robustness to image shifts against the baseline CNN model.",
+    "Interestingness": 8,
+    "Feasibility": 8,
+    "Novelty": 7
+  }
+]

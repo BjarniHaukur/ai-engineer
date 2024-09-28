@@ -4,7 +4,7 @@ import pytorch_lightning as pl
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
-from torchvision import transforms
+from torchvision import transforms as T
 from torchvision.datasets import MNIST
 import wandb
 from pytorch_lightning.loggers import WandbLogger
@@ -43,6 +43,11 @@ class Model(pl.LightningModule):
         
     def train_dataloader(self):
         dataset = load_dataset('uoft-cs/cifar100', split='train')
+        # Convert images to tensors
+        transforms = T.Compose([
+            T.ToTensor()
+        ])
+        dataset = dataset.with_transform(transforms)
         return DataLoader(dataset, batch_size=32)
     
     def val_dataloader(self):
