@@ -125,11 +125,10 @@ if __name__ == "__main__":
 
     for direction in directions:            
         direction_path = DIRECTIONS_PATH / direction
+
+        for idea, thought in zip(all_ideas[direction], all_thoughts[direction]):
+            idea["Thought"] = thought
         
         with open(direction_path / "ideas.json", "a") as f: json.dump(all_ideas[direction], f, indent=2)
         
-        for idea, thought in zip(all_ideas[direction], all_thoughts[direction]):
-            idea_path = direction_path / idea["Name"]
-            idea_path.mkdir(parents=True, exist_ok=True)
-            
-            with open(idea_path / "thought.txt", "w") as f: f.write(thought)
+

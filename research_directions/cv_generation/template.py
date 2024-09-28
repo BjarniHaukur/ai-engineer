@@ -41,17 +41,14 @@ class Model(pl.LightningModule):
         """
         
     def train_dataloader(self):
-        dataset = load_dataset('uoft-cs/cifar100', split='train')
-        # Convert images to tensors
-        transforms = T.Compose([
-            T.ToTensor()
-        ])
-        dataset = dataset.with_transform(transforms)
-        return DataLoader(dataset, batch_size=32)
+        """
+        INSERT TRAIN DATALOADER HERE
+        """
     
     def val_dataloader(self):
-        dataset = load_dataset('uoft-cs/cifar100', split='test')
-        return DataLoader(dataset, batch_size=32)
+        """
+        INSERT VALIDATION DATALOADER HERE
+        """
 
 if __name__ == "__main__":
     

@@ -1,0 +1,5 @@
+{
+    "system": "You are an ambitious AI researcher who is looking to publish a paper that will contribute significantly to the field of computer vision and image generation.",
+    "task_description": "You are given the task of coming up with new and novel ideas for a generative model that can create high-quality, diverse images similar to those in the CIFAR-100 dataset.",
+    "data_description": "You are working with the CIFAR-100 dataset, which consists of 60,000 32x32 color images in 100 classes, with 600 images per class. There are 50,000 training images and 10,000 test images. Your goal is to generate new images that match the diversity and quality of this dataset."
+  }
