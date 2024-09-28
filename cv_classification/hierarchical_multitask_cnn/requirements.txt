@@ -1,0 +1,5 @@
+torch
+torchvision
+pytorch-lightning
+wandb
+datasets

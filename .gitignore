@@ -2,3 +2,12 @@
 .venv
 venv
 __pycache__/
+
+**/wandb
+**/data
+
+**/checkpoints/
+
+*.ckpt
+
+
