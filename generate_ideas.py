@@ -52,51 +52,69 @@ Be cautious and realistic on your ratings.
 This JSON will be automatically parsed, so ensure the format is precise and that trailing commas are avoided.
 """
 
-def generate_ideas(direction:str|None=None, num_ideas=3)->tuple[list[dict], list[str]]:
-    if direction:
-        assert direction in os.listdir(DIRECTIONS_PATH), f"Direction {direction} not found in {DIRECTIONS_PATH}"
-        direction_paths = [DIRECTIONS_PATH / direction]
-    else:
-        direction_paths = [d for d in DIRECTIONS_PATH.iterdir() if d.is_dir()]
-        
+def generate_ideas(direction:str, num_ideas=3)->tuple[list[dict], list[str]]:
+    assert direction in os.listdir(DIRECTIONS_PATH), f"Direction {direction} not found in {DIRECTIONS_PATH}"
+       
+    with open(DIRECTIONS_PATH / direction / "prompt.yaml", "r") as f: prompt = yaml.safe_load(f) or []
+    with open(DIRECTIONS_PATH / direction / "ideas.yaml", "r") as f: prev_ideas = yaml.safe_load(f) or []
+    with open(DIRECTIONS_PATH / direction / "template.py", "r") as f: code = f.read() or []
+
+    ideas, thoughts = [], []
     
-    for direction_path in direction_paths:        
-        with open(direction_path / "prompt.yaml", "r") as f: prompt = yaml.safe_load(f) or []
-        with open(direction_path / "ideas.yaml", "r") as f: prev_ideas = yaml.safe_load(f) or []
-        with open(direction_path / "template.py", "r") as f: code = f.read() or []
-
-        ideas, thoughts = [], []
+    for _ in tqdm(range(num_ideas)):
+        idea_prompt = IDEA_PROMPT.format(
+            task_description=prompt["task_description"],
+            code=code,
+            prev_ideas_string=yaml.dump(prev_ideas),
+        )
+        msg = [
+            {"role": "system", "content": prompt["system"]},
+            {"role": "user", "content": idea_prompt}
+        ]
         
-        for _ in tqdm(range(num_ideas)):
-            idea_prompt = IDEA_PROMPT.format(
-                task_description=prompt["task_description"],
-                code=code,
-                prev_ideas_string=yaml.dump(prev_ideas),
-            )
-            msg = [
-                {"role": "system", "content": prompt["system"]},
-                {"role": "user", "content": idea_prompt}
-            ]
-            
-            # idea = post("openai/o1-preview-2024-09-12", msg)
-            idea = post("openai/gpt-4o-2024-08-06", msg)
+        # idea = post("openai/o1-preview-2024-09-12", msg)
+        idea = post("openai/gpt-4o-2024-08-06", msg)
 
-            idea_description = extract(idea, "thought")
-            idea_json = extract_json(idea)
-            
-            ideas.append(idea_json)
-            thoughts.append(idea_description)
-            
-        return ideas, thoughts
+        idea_description = extract(idea, "thought")
+        idea_json = extract_json(idea)
+        
+        if idea_description is None or idea_json is None:
+            print(f"Failed to extract idea, continuing...")
+            continue
+        
+        ideas.append(idea_json)
+        thoughts.append(idea_description)
+        
+    return ideas, thoughts
+    
+def sort_by_score(ideas:list[dict], thoughts:list[str])->tuple[list[dict], list[str]]:
+    scores = [idea["Interestingness"] + idea["Feasibility"] + idea["Novelty"] for idea in ideas]
+    sorted_indices = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)
+    return [ideas[i] for i in sorted_indices], [thoughts[i] for i in sorted_indices]
     
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("--direction", type=str, required=False, help="Specific research direction to generate ideas for")
-    parser.add_argument("--num_ideas", type=int, default=5)
+    parser.add_argument("--num_ideas", type=int, default=10)
+    parser.add_argument("--top_k", type=int, default=5)
     args = parser.parse_args()
     
-    ideas, thoughts = generate_ideas(args.direction, args.num_ideas)
+    if args.direction:
+        assert args.direction in os.listdir(DIRECTIONS_PATH), f"Direction {args.direction} not found in {DIRECTIONS_PATH}"
+        directions = [args.direction]
+    else:
+        directions = os.listdir(DIRECTIONS_PATH)
+        
+    
+    ideas, thoughts = generate_ideas(directions[0], args.num_ideas)
+    ideas, thoughts = sort_by_score(ideas, thoughts)
+    ideas, thoughts = ideas[:args.top_k], thoughts[:args.top_k]
+    
+    # for idea, thought in zip(ideas, thoughts):
+    #     # create the folders and save
+        
+        
     
     print(ideas)
     print("\n"*5)
