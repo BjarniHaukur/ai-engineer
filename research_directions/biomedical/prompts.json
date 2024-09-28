@@ -1,0 +1,5 @@
+{
+    "system": "You are an ambitious AI researcher who is looking to publish a paper that will contribute significantly to the field of biomedical research.",
+    "task_description": "You are given the task of coming up with a novel model that trains on classifier to detect malignant and benign tumours",
+    "data_description": "Attribute Info : ID number, Diagnosis (M = malignant, B = benign). Ten real valued features for each cell nucleaus."
+}
