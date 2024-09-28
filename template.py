@@ -1,4 +1,5 @@
 import os
+import torchvision
 import torch
 import pytorch_lightning as pl
 import torch.nn as nn
@@ -8,7 +9,7 @@ from torchvision import transforms
 from torchvision.datasets import MNIST
 import wandb
 from pytorch_lightning.loggers import WandbLogger
-
+from datasets import load_dataset
 
 class Model(pl.LightningModule):
     def __init__(self):
@@ -40,14 +41,17 @@ class Model(pl.LightningModule):
         """
         INSERT OPTIMIZER HERE
         """
+        
+    def train_dataloader(self):
+        """
+        INSERT TRAIN DATALOADER HERE
+        """
 
-# Data preparation
-dataset = MNIST('', train=True, download=True, transform=transforms.ToTensor())
-train_loader = DataLoader(dataset, batch_size=32)
-
-val_dataset = MNIST('', train=False, download=True, transform=transforms.ToTensor())
-val_loader = DataLoader(val_dataset, batch_size=32)
-
+    
+    def val_dataloader(self):
+        """
+        INSERT VALIDATION DATALOADER HERE
+        """
 
 if __name__ == "__main__":
     
@@ -72,7 +76,7 @@ if __name__ == "__main__":
     )
 
     # Train the model
-    trainer.fit(model, train_loader, val_loader)
+    trainer.fit(model)
 
     val_accuracy = trainer.callback_metrics['val_accuracy'].item()                                                
 
