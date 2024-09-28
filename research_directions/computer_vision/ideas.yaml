@@ -1,6 +1,5 @@
 # We can have few shot examples for ideas here, when new ideas are generated, they will be added to this file
 
-
 - Name: adaptive_receptive_field
   Title: "Adaptive Receptive Field: Dynamic Kernel Size Adjustment for Efficient CNN Training"
   Experiment: >
@@ -22,6 +21,5 @@
   Feasibility: 7
   Novelty: 5
 
-
-- Name: fastconv
-  # etc
+# etc
+# e.g. fastconv
