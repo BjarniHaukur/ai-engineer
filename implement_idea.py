@@ -96,9 +96,9 @@ If you think you can't improve the results, respond with 'ALL_COMPLETED'."""
         next_prompt = f"Run timed out after {timeout} seconds"
         return 1, next_prompt
 
-def run_idea(title, idea, idea_idx, research_direction_id):
-    # Create the research_direction_id/idea_idx folder if it doesn't exist
-    idea_folder = osp.join(research_direction_id, f"idea_{idea_idx}")
+def run_idea(title, idea, idea_name, research_direction_id):
+    # Create the research_direction_id/idea_name folder if it doesn't exist
+    idea_folder = osp.join(research_direction_id, f"{idea_name}")
     if not osp.exists(idea_folder):
         os.makedirs(idea_folder)
 
@@ -108,11 +108,11 @@ def run_idea(title, idea, idea_idx, research_direction_id):
     shutil.copy(src_logging_file, dst_logging_file)
 
     io = InputOutput(
-            yes=True, chat_history_file=f"{research_direction_id}/idea_{idea_idx}/idea_{idea_idx}_aider.txt"
+            yes=True, chat_history_file=f"{research_direction_id}/{idea_name}/{idea_name}_aider.txt"
         )
     
-    main_file = osp.join(research_direction_id, f"idea_{idea_idx}", "main.py")
-    requirements_file = osp.join(research_direction_id, f"idea_{idea_idx}", "requirements.txt")
+    main_file = osp.join(research_direction_id, f"{idea_name}", "main.py")
+    requirements_file = osp.join(research_direction_id, f"{idea_name}", "requirements.txt")
 
     coder = Coder.create(
         main_model=main_model,
@@ -123,7 +123,7 @@ def run_idea(title, idea, idea_idx, research_direction_id):
         edit_format="diff",
     )
 
-    next_prompt = main_prompt.format(title=title, idea=idea, max_runs=MAX_RUNS, research_direction_id=research_direction_id, idea_id=f"idea_{idea_idx}")
+    next_prompt = main_prompt.format(title=title, idea=idea, max_runs=MAX_RUNS, research_direction_id=research_direction_id, idea_id=f"{idea_name}")
 
     run = 1
     current_iter = 0
@@ -132,7 +132,7 @@ def run_idea(title, idea, idea_idx, research_direction_id):
         # print(coder_out)
         if "ALL_COMPLETED" in coder_out:
             break
-        return_code, next_prompt = run_experiment(f"idea_{idea_idx}", run, research_direction_id)
+        return_code, next_prompt = run_experiment(f"{idea_name}", run, research_direction_id)
         
         if return_code == 0:
             run += 1
