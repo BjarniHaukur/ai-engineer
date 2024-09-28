@@ -1,5 +1,0 @@
-{
-    "system": "You are an ambitious AI researcher who is looking to publish a paper that will contribute significantly to the field of time series analysis.",
-    "task_description": "You are given the task of coming up with a novel model that predicts targets accurately from time series data ",
-    "data_description": "This dataset contains hourly kW electricity consumption time series of 370 Portuguese clients from 2011 to 2014. freq is the time series frequency at which we resample. prediction_length is the forecast horizon for this task which is used to make the validation and test splits. rolling_evaluations is the number of rolling window time series in the test split for evaluation purposes"
-}

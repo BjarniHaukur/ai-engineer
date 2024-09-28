@@ -28,7 +28,6 @@ class Model(pl.LightningModule):
         INSERT TRAINING STEP HERE
         """
         self.log('train_accuracy', train_accuracy, on_step=True, on_epoch=True, prog_bar=True, logger=True)
-        return loss
     
     def validation_step(self, batch, batch_idx):
         """
