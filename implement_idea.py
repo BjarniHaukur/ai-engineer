@@ -22,10 +22,11 @@ You are given a total of up to {max_runs} runs to complete the necessary experim
 
 First, plan the list of experiments you would like to run. For example, if you are sweeping over a specific hyperparameter, plan each value you would like to test for each run.
 
-After you complete each change, we will run the command `python main.py --out_dir=run_i' where i is the run number and evaluate the results.
+After you complete each change, we will run the command `python main.py'.
 YOUR PROPOSED CHANGE MUST USE THIS COMMAND FORMAT, DO NOT ADD ADDITIONAL COMMAND LINE ARGS. WRITE THE TRAINING CODE INSIDE main.py
 
-You need to save the final validation loss inside the <out_dir> folder in a file named val_loss.txt, and the final validation accuracy in a file named val_accuracy.txt
+Only implement the code for the Model class.
+
 Use the requirements.txt file to list all the packages required to run the script.
 
 You can then implement the next thing on your list.
@@ -44,7 +45,14 @@ def run_experiment(idea_id, run_num, research_direction_id, timeout=7200):
     command = [
         "python",
         "main.py",
-        f"--out_dir=run_{run_num}",
+        "--out_dir",
+        f"run_{run_num}",
+        "--wandb_project",
+        "ai-engineer",
+        "--wandb_name",
+        f"{idea_id}/run_{run_num}",
+        "--wandb_group",
+        research_direction_id,
     ]
     try:
         result = subprocess.run(
@@ -68,15 +76,15 @@ def run_experiment(idea_id, run_num, research_direction_id, timeout=7200):
                 stderr_output = "..." + stderr_output[-MAX_STDERR_OUTPUT:]
             next_prompt = f"Run failed with the following error {stderr_output}"
         else:
-            with open(osp.join(cwd, f"run_{run_num}", "val_loss.txt"), "r") as f:
-                val_loss = f.readline()
-            results = f"Validation loss: {val_loss}"
+            with open(osp.join(cwd, f"run_{run_num}", "val_accuracy.txt"), "r") as f:
+                val_accuracy = f.readline()
+            results = f"Validation accuracy: {val_accuracy}"
 
             next_prompt = f"""Run {run_num} completed. Here are the results:
 {results}
 
 Decide if you want to try to improve the result.
-We will then run the command `python main.py --out_dir=run_{run_num + 1}'.
+We will then run the command `python main.py'.
 YOUR PROPOSED CHANGE MUST USE THIS COMMAND FORMAT, DO NOT ADD ADDITIONAL COMMAND LINE ARGS.
 If you think you can't improve the results, respond with 'ALL_COMPLETED'."""
         return result.returncode, next_prompt
@@ -94,7 +102,7 @@ def run_idea(title, idea, idea_idx, research_direction_id):
         os.makedirs(idea_folder)
 
     # Copy logging.py to the idea folder
-    src_logging_file = "main.py"
+    src_logging_file = "template.py"
     dst_logging_file = osp.join(idea_folder, "main.py")
     shutil.copy(src_logging_file, dst_logging_file)
 

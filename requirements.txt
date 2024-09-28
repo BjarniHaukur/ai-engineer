@@ -3,9 +3,8 @@ requests
 tqdm
 PyMuPDF==1.23.8
 
+aider-chat
 torch
 torchvision
-torchaudio
-einops
-
-setuptools>=58.0.0
+wandb
+lightning
