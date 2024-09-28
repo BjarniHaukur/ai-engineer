@@ -1,0 +1,11 @@
+python-dotenv
+requests
+pyyaml
+tqdm
+
+torch
+torchvision
+torchaudio
+einops
+
+setuptools>=58.0.0

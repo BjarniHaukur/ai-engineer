@@ -1,0 +1,25 @@
+# We can have few shot examples for ideas here, when new ideas are generated, they will be added to this file
+
+- Name: adaptive_receptive_field
+  Title: "Adaptive Receptive Field: Dynamic Kernel Size Adjustment for Efficient CNN Training"
+  Experiment: >
+    Modify the CNN model to dynamically adjust its convolutional kernel sizes during training,
+    starting with smaller kernels and gradually increasing them. This could potentially lead
+    to faster initial training and better feature extraction at different scales.
+  Interestingness: 7
+  Feasibility: 5
+  Novelty: 6
+
+- Name: layerwise_learning_rates_cnn
+  Title: "Layer-wise Learning Rate Adaptation: Optimizing Training Dynamics in Convolutional Neural Networks"
+  Experiment: >
+    Implement layer-wise learning rates for CNNs, where each convolutional layer has its own
+    learning rate. Modify the configure_optimizers function to assign different learning rates
+    to different layers, with deeper layers having lower learning rates. Compare the training
+    dynamics, convergence speed, and final performance with the baseline CNN model.
+  Interestingness: 6
+  Feasibility: 7
+  Novelty: 5
+
+# etc
+# e.g. fastconv
