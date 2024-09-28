@@ -9,7 +9,13 @@ def process_idea(idea, idx, research_direction):
     print(f"Completed idea {idx}\n")
 
 if __name__ == '__main__':
-    research_direction = "computer_vision"
+    import sys
+    
+    if len(sys.argv) < 2:
+        print("Please provide a research direction as a command line argument.")
+        sys.exit(1)
+    
+    research_direction = sys.argv[1]
 
     # Read the ideas.json file
     ideas_file_path = os.path.join("research_directions", research_direction, "ideas.json")
