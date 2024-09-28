@@ -64,7 +64,7 @@ def generate_ideas(direction:str, num_ideas=3)->tuple[list[dict], list[str]]:
         idea_prompt = IDEA_PROMPT.format(
             task_description=prompt["task_description"],
             code=code,
-            prev_ideas_string=yaml.dump(few_shot_ideas) + "\n".join(ideas),
+            prev_ideas_string=yaml.dump(few_shot_ideas) + yaml.dump(ideas),
         )
         msg = [
             {"role": "system", "content": prompt["system"]},
