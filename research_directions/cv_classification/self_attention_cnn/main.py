@@ -8,7 +8,6 @@ from torch.utils.data import DataLoader
 from torchvision import transforms
 from torchvision.datasets import MNIST
 import wandb
-from torchvision.datasets import CIFAR100
 from pytorch_lightning.loggers import WandbLogger
 from datasets import load_dataset
 
@@ -18,17 +17,15 @@ class Model(pl.LightningModule):
         self.conv1 = nn.Conv2d(3, 32, kernel_size=3, stride=1, padding=1)
         self.conv2 = nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1)
         self.conv3 = nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=1)
+        self.pool = nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
         self.fc1 = nn.Linear(128 * 4 * 4, 256)
         self.fc2 = nn.Linear(256, 100)
     
     def forward(self, x):
-        x = F.relu(self.conv1(x))
-        x = F.max_pool2d(x, 2)
-        x = F.relu(self.conv2(x))
-        x = F.max_pool2d(x, 2)
-        x = F.relu(self.conv3(x))
-        x = F.max_pool2d(x, 2)
-        x = torch.flatten(x, 1)
+        x = self.pool(F.relu(self.conv1(x)))
+        x = self.pool(F.relu(self.conv2(x)))
+        x = self.pool(F.relu(self.conv3(x)))
+        x = x.view(-1, 128 * 4 * 4)
         x = F.relu(self.fc1(x))
         x = self.fc2(x)
         return x
@@ -40,13 +37,16 @@ class Model(pl.LightningModule):
         train_accuracy = (y_hat.argmax(dim=1) == y).float().mean()
         self.log('train_accuracy', train_accuracy, on_step=True, on_epoch=True, prog_bar=True, logger=True)
         return loss
+        self.log('train_accuracy', train_accuracy, on_step=True, on_epoch=True, prog_bar=True, logger=True)
+        return loss
     
     def validation_step(self, batch, batch_idx):
         x, y = batch
         y_hat = self(x)
         val_loss = F.cross_entropy(y_hat, y)
         val_accuracy = (y_hat.argmax(dim=1) == y).float().mean()
-        self.log('val_loss', val_loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
+        self.log('val_accuracy', val_accuracy, on_step=True, on_epoch=True, prog_bar=True, logger=True)
+        return val_loss
         self.log('val_accuracy', val_accuracy, on_step=True, on_epoch=True, prog_bar=True, logger=True)
     
     def configure_optimizers(self):
@@ -54,19 +54,21 @@ class Model(pl.LightningModule):
         
     def train_dataloader(self):
         transform = transforms.Compose([
+            transforms.RandomHorizontalFlip(),
+            transforms.RandomCrop(32, padding=4),
             transforms.ToTensor(),
-            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+            transforms.Normalize((0.5071, 0.4867, 0.4408), (0.2675, 0.2565, 0.2761))
         ])
-        train_dataset = CIFAR100(root='./data', train=True, download=True, transform=transform)
+        train_dataset = torchvision.datasets.CIFAR100(root='./data', train=True, download=True, transform=transform)
         return DataLoader(train_dataset, batch_size=64, shuffle=True, num_workers=4)
 
     
     def val_dataloader(self):
         transform = transforms.Compose([
             transforms.ToTensor(),
-            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+            transforms.Normalize((0.5071, 0.4867, 0.4408), (0.2675, 0.2565, 0.2761))
         ])
-        val_dataset = CIFAR100(root='./data', train=False, download=True, transform=transform)
+        val_dataset = torchvision.datasets.CIFAR100(root='./data', train=False, download=True, transform=transform)
         return DataLoader(val_dataset, batch_size=64, shuffle=False, num_workers=4)
 
 if __name__ == "__main__":

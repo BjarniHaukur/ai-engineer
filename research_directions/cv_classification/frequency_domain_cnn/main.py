@@ -14,44 +14,65 @@ from datasets import load_dataset
 class Model(pl.LightningModule):
     def __init__(self):
         super().__init__()
-        """
-        INSERT MODEL ARCHITECTURE HERE
-        """
+        self.conv1 = nn.Conv2d(3, 32, kernel_size=3, stride=1, padding=1)
+        self.conv2 = nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1)
+        self.pool = nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
+        self.fc1 = nn.Linear(64 * 8 * 8, 512)
+        self.fc2 = nn.Linear(512, 100)
+        self.dropout = nn.Dropout(0.5)
     
     def forward(self, x):
-        """
-        INSERT FORWARD PASS HERE
-        """
-        pass
+        x = self.pool(F.relu(self.conv1(x)))
+        x = self.pool(F.relu(self.conv2(x)))
+        x = x.view(-1, 64 * 8 * 8)
+        x = F.relu(self.fc1(x))
+        x = self.dropout(x)
+        x = self.fc2(x)
+        return x
     
     def training_step(self, batch, batch_idx):
-        """
-        INSERT TRAINING STEP HERE
-        """
+        # Assuming a simple CNN architecture
+        x, y = batch
+        y_hat = self(x)
+        loss = F.cross_entropy(y_hat, y)
+        
+        # Calculate accuracy
+        preds = torch.argmax(y_hat, dim=1)
+        train_accuracy = torch.sum(preds == y).item() / (len(y) * 1.0)
+        
         self.log('train_accuracy', train_accuracy, on_step=True, on_epoch=True, prog_bar=True, logger=True)
         return loss
     
     def validation_step(self, batch, batch_idx):
-        """
-        INSERT VALIDATION STEP HERE
-        """
+        x, y = batch
+        y_hat = self(x)
+        val_loss = F.cross_entropy(y_hat, y)
+        
+        # Calculate accuracy
+        preds = torch.argmax(y_hat, dim=1)
+        val_accuracy = torch.sum(preds == y).item() / (len(y) * 1.0)
+        
         self.log('val_accuracy', val_accuracy, on_step=True, on_epoch=True, prog_bar=True, logger=True)
+        return val_loss
     
     def configure_optimizers(self):
-        """
-        INSERT OPTIMIZER HERE
-        """
+        return torch.optim.Adam(self.parameters(), lr=0.001)
         
     def train_dataloader(self):
-        """
-        INSERT TRAIN DATALOADER HERE
-        """
+        transform = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize((0.5071, 0.4865, 0.4409), (0.2673, 0.2564, 0.2762))
+        ])
+        train_dataset = torchvision.datasets.CIFAR100(root='./data', train=True, download=True, transform=transform)
+        return DataLoader(train_dataset, batch_size=64, shuffle=True, num_workers=4)
 
-    
     def val_dataloader(self):
-        """
-        INSERT VALIDATION DATALOADER HERE
-        """
+        transform = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize((0.5071, 0.4865, 0.4409), (0.2673, 0.2564, 0.2762))
+        ])
+        val_dataset = torchvision.datasets.CIFAR100(root='./data', train=False, download=True, transform=transform)
+        return DataLoader(val_dataset, batch_size=64, shuffle=False, num_workers=4)
 
 if __name__ == "__main__":
     

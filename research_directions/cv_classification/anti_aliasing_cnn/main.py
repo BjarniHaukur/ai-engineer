@@ -11,50 +11,25 @@ import wandb
 from pytorch_lightning.loggers import WandbLogger
 from datasets import load_dataset
 
-class SelfAttention(nn.Module):
-    def __init__(self, in_dim):
-        super(SelfAttention, self).__init__()
-        self.query_conv = nn.Conv2d(in_dim, in_dim // 8, kernel_size=1)
-        self.key_conv = nn.Conv2d(in_dim, in_dim // 8, kernel_size=1)
-        self.value_conv = nn.Conv2d(in_dim, in_dim, kernel_size=1)
-        self.gamma = nn.Parameter(torch.zeros(1))
-
-    def forward(self, x):
-        batch_size, C, width, height = x.size()
-        proj_query = self.query_conv(x).view(batch_size, -1, width * height).permute(0, 2, 1)
-        proj_key = self.key_conv(x).view(batch_size, -1, width * height)
-        energy = torch.bmm(proj_query, proj_key)
-        attention = F.softmax(energy, dim=-1)
-        proj_value = self.value_conv(x).view(batch_size, -1, width * height)
-
-        out = torch.bmm(proj_value, attention.permute(0, 2, 1))
-        out = out.view(batch_size, C, width, height)
-        out = self.gamma * out + x
-        return out
-
 class Model(pl.LightningModule):
     def __init__(self):
         super().__init__()
         self.conv1 = nn.Conv2d(3, 32, kernel_size=3, stride=1, padding=1)
         self.conv2 = nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1)
         self.conv3 = nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=1)
-        self.attention1 = SelfAttention(32)
-        self.attention2 = SelfAttention(64)
-        self.attention3 = SelfAttention(128)
-        self.fc1 = nn.Linear(128 * 8 * 8, 256)
-        self.dropout = nn.Dropout(0.5)
+        self.pool = nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
+        self.fc1 = nn.Linear(128 * 4 * 4, 256)
         self.fc2 = nn.Linear(256, 100)
+        self.dropout = nn.Dropout(0.5)
+        self.batch_norm1 = nn.BatchNorm2d(32)
+        self.batch_norm2 = nn.BatchNorm2d(64)
+        self.batch_norm3 = nn.BatchNorm2d(128)
     
     def forward(self, x):
-        x = F.relu(self.conv1(x))
-        x = self.attention1(x)
-        x = F.relu(self.conv2(x))
-        x = self.attention2(x)
-        x = F.max_pool2d(x, 2)
-        x = F.relu(self.conv3(x))
-        x = F.max_pool2d(x, 2)
-        x = self.attention3(x)
-        x = x.view(x.size(0), -1)
+        x = self.pool(F.relu(self.batch_norm1(self.conv1(x))))
+        x = self.pool(F.relu(self.batch_norm2(self.conv2(x))))
+        x = self.pool(F.relu(self.batch_norm3(self.conv3(x))))
+        x = x.view(-1, 128 * 4 * 4)
         x = F.relu(self.fc1(x))
         x = self.dropout(x)
         x = self.fc2(x)
@@ -62,39 +37,45 @@ class Model(pl.LightningModule):
     
     def training_step(self, batch, batch_idx):
         x, y = batch
-        y_hat = self(x)
+        y_hat = self.forward(x)
         loss = F.cross_entropy(y_hat, y)
-        train_accuracy = (y_hat.argmax(dim=1) == y).float().mean()
+        preds = torch.argmax(y_hat, dim=1)
+        train_accuracy = torch.sum(preds == y).item() / (len(y) * 1.0)
         self.log('train_accuracy', train_accuracy, on_step=True, on_epoch=True, prog_bar=True, logger=True)
         return loss
     
     def validation_step(self, batch, batch_idx):
         x, y = batch
-        y_hat = self(x)
-        val_loss = F.cross_entropy(y_hat, y)
-        val_accuracy = (y_hat.argmax(dim=1) == y).float().mean()
-        self.log('val_loss', val_loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
+        y_hat = self.forward(x)
+        loss = F.cross_entropy(y_hat, y)
+        preds = torch.argmax(y_hat, dim=1)
+        val_accuracy = torch.sum(preds == y).item() / (len(y) * 1.0)
         self.log('val_accuracy', val_accuracy, on_step=True, on_epoch=True, prog_bar=True, logger=True)
     
     def configure_optimizers(self):
-        return torch.optim.Adam(self.parameters(), lr=1e-3)
+        optimizer = torch.optim.SGD(self.parameters(), lr=0.01, momentum=0.9)
+        scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.1)
+        return [optimizer], [scheduler]
         
     def train_dataloader(self):
         transform = transforms.Compose([
+            transforms.RandomCrop(32, padding=4),
+            transforms.RandomHorizontalFlip(),
             transforms.ToTensor(),
-            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+            transforms.Normalize((0.5071, 0.4867, 0.4408), (0.2675, 0.2565, 0.2761)),
         ])
         train_dataset = torchvision.datasets.CIFAR100(root='./data', train=True, download=True, transform=transform)
-        return DataLoader(train_dataset, batch_size=64, shuffle=True, num_workers=4)
-
+        train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True, num_workers=4)
+        return train_loader
     
     def val_dataloader(self):
         transform = transforms.Compose([
             transforms.ToTensor(),
-            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+            transforms.Normalize((0.5071, 0.4867, 0.4408), (0.2675, 0.2565, 0.2761)),
         ])
         val_dataset = torchvision.datasets.CIFAR100(root='./data', train=False, download=True, transform=transform)
-        return DataLoader(val_dataset, batch_size=64, shuffle=False, num_workers=4)
+        val_loader = DataLoader(val_dataset, batch_size=64, shuffle=False, num_workers=4)
+        return val_loader
 
 if __name__ == "__main__":
     
@@ -113,7 +94,7 @@ if __name__ == "__main__":
     model = Model()
 
     trainer = pl.Trainer(
-        max_epochs=10,
+        max_epochs=3,
         accelerator='auto',
         logger=wandb_logger
     )
