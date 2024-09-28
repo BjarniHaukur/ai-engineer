@@ -2,6 +2,7 @@ python-dotenv
 requests
 pyyaml
 tqdm
+PyMuPDF==1.23.8
 
 torch
 torchvision

@@ -9,9 +9,8 @@ from utils.extract import extract, extract_json
 DIRECTIONS_PATH = Path("research_directions")
 
 IDEA_PROMPT = """{task_description}
-<experiment.py>
-{code}
-</experiment.py>
+
+{data_description}
 
 Here are the ideas that you have already generated:
 
@@ -38,6 +37,7 @@ In <THOUGHT>, provide a high-level technical overview of the proposed research i
 - Formulate the abstract research problem or hypothesis
 - Conceptualize the methodological framework and experimental paradigm
 - Identify key algorithms, models, or techniques to be utilized
+- Specify in an abstract way the model architecture, training step logic and loss function
 
 In <JSON>, provide the new idea in JSON format with the following fields:
 - "Name": A shortened descriptor of the idea. Lowercase, no spaces, underscores allowed.
@@ -56,14 +56,13 @@ def generate_ideas(direction:str, num_ideas=3)->tuple[list[dict], list[str]]:
        
     with open(DIRECTIONS_PATH / direction / "prompt.yaml", "r") as f: prompt = yaml.safe_load(f) or []
     with open(DIRECTIONS_PATH / direction / "few_shot_ideas.yaml", "r") as f: few_shot_ideas = yaml.safe_load(f) or []
-    with open(DIRECTIONS_PATH / direction / "template.py", "r") as f: code = f.read() or []
 
     ideas, thoughts = [], []
     
     for _ in range(num_ideas):
         idea_prompt = IDEA_PROMPT.format(
             task_description=prompt["task_description"],
-            code=code,
+            data_description=prompt["data_description"],
             prev_ideas_string=yaml.dump(few_shot_ideas) + yaml.dump(ideas),
         )
         msg = [
