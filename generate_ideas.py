@@ -55,7 +55,7 @@ def generate_ideas(direction:str, num_ideas=3)->tuple[list[dict], list[str]]:
     assert direction in os.listdir(DIRECTIONS_PATH), f"Direction {direction} not found in {DIRECTIONS_PATH}"
        
     with open(DIRECTIONS_PATH / direction / "prompt.yaml", "r") as f: prompt = yaml.safe_load(f) or []
-    with open(DIRECTIONS_PATH / direction / "ideas.yaml", "r") as f: prev_ideas = yaml.safe_load(f) or []
+    with open(DIRECTIONS_PATH / direction / "few_shot_ideas.yaml", "r") as f: few_shot_ideas = yaml.safe_load(f) or []
     with open(DIRECTIONS_PATH / direction / "template.py", "r") as f: code = f.read() or []
 
     ideas, thoughts = [], []
@@ -64,7 +64,7 @@ def generate_ideas(direction:str, num_ideas=3)->tuple[list[dict], list[str]]:
         idea_prompt = IDEA_PROMPT.format(
             task_description=prompt["task_description"],
             code=code,
-            prev_ideas_string=yaml.dump(prev_ideas),
+            prev_ideas_string=yaml.dump(few_shot_ideas) + "\n".join(ideas),
         )
         msg = [
             {"role": "system", "content": prompt["system"]},
@@ -124,12 +124,14 @@ if __name__ == "__main__":
             except Exception as exc:
                 print(f"Direction {direction} generated an exception: {exc}")
 
-            
-            
-            # perhaps just return a list of ideas, to then be e.g. filtered before creating the folders
-            
-            # create the folder, save the idea (maybe _json is enough, otherwise we could ask for a more thorough writeup)
-            
-            # maybe do some reflection here, perhaps o1 does that well enough already
+
+    for direction in directions:            
+        direction_path = DIRECTIONS_PATH / direction
         
+        with open(direction_path / "ideas.yaml", "a") as f: yaml.dump(all_ideas[direction], f)
         
+        for idea, thought in zip(all_ideas[direction], all_thoughts[direction]):
+            idea_path = direction_path / idea["Name"]
+            idea_path.mkdir(parents=True, exist_ok=True)
+            
+            with open(idea_path / "thought.txt", "w") as f: f.write(thought)
