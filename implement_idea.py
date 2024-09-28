@@ -12,6 +12,7 @@ from subprocess import TimeoutExpired
 main_model = Model("gpt-4o")
 
 MAX_RUNS = 3
+MAX_ITERS = 10
 
 MAX_STDERR_OUTPUT = 1500
 
@@ -125,10 +126,19 @@ def run_idea(title, idea, idea_idx, research_direction_id):
     next_prompt = main_prompt.format(title=title, idea=idea, max_runs=MAX_RUNS, research_direction_id=research_direction_id, idea_id=f"idea_{idea_idx}")
 
     run = 1
+    current_iter = 0
     while run < MAX_RUNS + 1:
         coder_out = coder.run(next_prompt)
         # print(coder_out)
         if "ALL_COMPLETED" in coder_out:
             break
         return_code, next_prompt = run_experiment(f"idea_{idea_idx}", run, research_direction_id)
-        run += 1
+        
+        if return_code == 0:
+            run += 1
+            current_iter = 0
+        current_iter += 1
+
+        if current_iter >= MAX_ITERS:
+            current_iter = 0
+            run += 1
