@@ -11,10 +11,6 @@ DIRECTIONS_PATH = Path("research_directions")
 IDEA_PROMPT = """{task_description}
 {data_description}
 
-<template.py>
-{template}
-</template.py>
-
 Here are the ideas that you have already generated:
 
 '''
@@ -38,9 +34,10 @@ NEW IDEA JSON:
 
 In <THOUGHT>, provide a high-level technical overview of the proposed research in plain text:
 - Formulate the abstract research problem or hypothesis
-- Conceptualize the methodological framework and experimental paradigm
-- Identify key algorithms, models, or techniques to be utilized
-- Specify in an abstract way the model architecture, training step logic and loss function
+- Specify the theoretical foundations, including relevant mathematical formulations
+- Detail the proposed model architecture, including: Layer compositions and interactions or novel architectural components or modifications
+- Outline the training process, including: Loss function formulation and justification, optimization techniques and learning rate strategies and any proposed regularization methods
+
 
 In <JSON>, provide the new idea in JSON format with the following fields:
 - "Name": A shortened descriptor of the idea. Lowercase, no spaces, underscores allowed.
@@ -59,14 +56,12 @@ def generate_ideas(direction:str, num_ideas=3)->tuple[list[dict], list[str]]:
        
     with open(DIRECTIONS_PATH / direction / "prompt.json", "r") as f: prompt = json.load(f)
     with open(DIRECTIONS_PATH / direction / "few_shot_ideas.json", "r") as f: few_shot_ideas = json.load(f)
-    with open(DIRECTIONS_PATH / direction / "template.py", "r") as f: template = f.read()
     ideas, thoughts = [], []
     
     for _ in range(num_ideas):
         idea_prompt = IDEA_PROMPT.format(
             task_description=prompt["task_description"],
             data_description=prompt["data_description"],
-            template=template,
             prev_ideas_string=json.dumps(few_shot_ideas) + json.dumps(ideas),
         )
         msg = [
@@ -74,8 +69,8 @@ def generate_ideas(direction:str, num_ideas=3)->tuple[list[dict], list[str]]:
             {"role": "user", "content": idea_prompt}
         ]
         
-        # idea = post("openai/o1-preview-2024-09-12", msg)
-        idea = post("openai/gpt-4o-2024-08-06", msg)
+        idea = post("openai/o1-preview-2024-09-12", msg)
+        # idea = post("openai/gpt-4o-2024-08-06", msg)
 
         idea_description = extract(idea, "thought")
         idea_json = extract_json(idea)

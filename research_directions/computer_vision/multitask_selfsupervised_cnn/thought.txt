@@ -1,0 +1,15 @@
+We propose to investigate the impact of multi-task self-supervised learning on convolutional neural networks (CNNs) for image classification. Specifically, we hypothesize that integrating an auxiliary rotation prediction task alongside the primary classification task can enhance the learned feature representations, leading to improved performance on the CIFAR-100 dataset.
+
+The theoretical foundation rests on the premise that self-supervised tasks encourage the network to learn more generalized and robust features by introducing additional supervisory signals. By predicting image rotations, the network must capture spatial and structural information inherent in the images, which can improve its understanding of object orientations and relationships.
+
+Our proposed model architecture modifies the existing CNN by adding a secondary output head for rotation prediction. The shared layers consist of convolutional and pooling layers identical to the baseline model. After the shared layers, the network branches into two separate fully connected layers: one for the primary classification task and another for predicting rotation angles (e.g., 0°, 90°, 180°, 270°). This dual-head design allows the model to simultaneously learn from both tasks.
+
+During training, input images will be randomly rotated by one of the specified angles. The training process involves minimizing a combined loss function that aggregates the classification loss (\( L_{\text{class}} \)) and the rotation prediction loss (\( L_{\text{rot}} \)). The total loss \( L_{\text{total}} \) is defined as:
+
+\[ L_{\text{total}} = L_{\text{class}} + \lambda L_{\text{rot}} \]
+
+where \( \lambda \) is a weighting hyperparameter that balances the contribution of the rotation task. Both losses can be computed using cross-entropy, appropriate for multi-class classification problems.
+
+For optimization, we will employ standard techniques such as stochastic gradient descent or Adam optimizer. Learning rate schedules and possible adjustments per task will be considered to ensure balanced learning. Regularization methods, including data augmentation (beyond rotations) and weight decay, will be applied to prevent overfitting.
+
+By comparing the performance of this multi-task model with the baseline CNN, we aim to demonstrate that auxiliary self-supervised tasks can significantly enhance image classification results without additional data or computational overhead.
