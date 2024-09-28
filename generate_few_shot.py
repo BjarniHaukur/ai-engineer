@@ -101,9 +101,13 @@ if __name__ == "__main__":
     review_json = extract_json(review)
     if review_json:
         few_shot_file = DIRECTIONS_PATH / args.add_to / "few_shot_ideas.yaml"
-        with open(few_shot_file, 'r') as file: existing_ideas = yaml.safe_load(file) or []
+        with open(few_shot_file, 'r') as file:
+            existing_ideas = yaml.safe_load(file) or []
+        print(existing_ideas)
         existing_ideas.append(review_json)
-        with open(few_shot_file, 'w') as file: yaml.dump(existing_ideas, file, default_flow_style=False)
+        print(review_json)
+        with open(few_shot_file, 'w') as file:
+            yaml.dump(existing_ideas, file, default_flow_style=False, sort_keys=False)
         print(f"New idea appended to {few_shot_file}")
     else:
         print("Failed to extract JSON from the review.")
