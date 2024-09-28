@@ -49,7 +49,7 @@ In <JSON>, provide the new idea in JSON format with the following fields:
 - "Novelty": A rating from 1 to 10 (lowest to highest).
 
 Be cautious and realistic on your ratings.
-This JSON will be automatically parsed, so ensure the format is precise.
+This JSON will be automatically parsed, so ensure the format is precise and that trailing commas are avoided.
 """
 
 def generate_ideas(direction:str|None=None, num_ideas=3)->tuple[list[dict], list[str]]:
