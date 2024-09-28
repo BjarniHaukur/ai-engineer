@@ -66,14 +66,13 @@ In <REVIEW>, provide a concise review of the paper in plain text:
 - Highlight the main findings and their significance
 - Discuss potential limitations or areas for improvement
 
-In <JSON>, provide an assessment of the paper in JSON format with the following fields:
-- "Title": The title of the paper being reviewed.
-- "Authors": A list of the paper's authors.
-- "Year": The year the paper was published.
-- "Key_Contribution": A brief statement of the paper's main contribution.
-- "Feasibility": A rating from 1 to 10 (lowest to highest) on how feasible it would be to implement or build upon this research.
-- "Interestingness": A rating from 1 to 10 (lowest to highest) on how interesting or impactful this research is.
-- "Potential_Extensions": A list of 2-3 potential ways to extend or build upon this research.
+In <JSON>, provide the new idea in JSON format with the following fields:
+- "Name": A shortened descriptor of the idea. Lowercase, no spaces, underscores allowed.
+- "Title": A title for the idea, will be used for the report writing.
+- "Experiment": An outline of the implementation. E.g. which functions need to be added or modified, how results will be obtained, ...
+- "Interestingness": A rating from 1 to 10 (lowest to highest).
+- "Feasibility": A rating from 1 to 10 (lowest to highest).
+- "Novelty": A rating from 1 to 10 (lowest to highest).
 
 Be objective and realistic in your ratings and assessments.
 This JSON will be automatically parsed, so ensure the format is precise and that trailing commas are avoided."""
@@ -81,9 +80,9 @@ This JSON will be automatically parsed, so ensure the format is precise and that
 PAPER_REVIEW_PROMPT = """Review the following paper and provide an assessment of its feasibility and interestingness for potential implementation or further research.
 {paper_text}"""
 
-# Main function to handle argparse and call the processing pipeline
-def main():
-    parser = argparse.ArgumentParser(description="Download, extract, and preprocess arXiv paper.")
+    
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Download, extract, and process a paper from arXiv.")
     parser.add_argument("arxiv_link", type=str, help="The full URL to the arXiv paper")
     args = parser.parse_args()
     
@@ -95,10 +94,10 @@ def main():
     ]
     review = post("openai/gpt-4o-2024-08-06", msg)
     
-    print(review)
-    
-
-    
-
-if __name__ == "__main__":
-    main()
+    review_json = extract_json(review)
+    if review_json:
+        filename = f"{review_json['Name']}.yaml"
+        with open(filename, 'w') as file: yaml.dump(review_json, file, default_flow_style=False)
+        print(f"Review saved to {filename}")
+    else:
+        print("Failed to extract JSON from the review.")
