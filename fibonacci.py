@@ -7,8 +7,8 @@ def fibonacci(n):
 def main():
     n = 10  # Calculate first 10 Fibonacci numbers
     print(f"First {n} Fibonacci numbers:")
-    for i in range(n):
-        print(fibonacci(i), end=" ")
+    fib_numbers = [fibonacci(i) for i in range(n)]
+    print(", ".join(map(str, fib_numbers)))
 
 if __name__ == "__main__":
     main()
