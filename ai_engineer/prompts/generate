@@ -1,0 +1,15 @@
+Think step by step and reason yourself to the correct decisions to make sure we get it right.
+First lay out the names of the core Python classes, functions, and methods that will be necessary, as well as a quick comment on their purpose.
+
+FILE_FORMAT
+
+You will start with the "entrypoint" file (usually main.py or app.py), then go to the ones that are imported by that file, and so on.
+Please note that the code should be fully functional Python code. No placeholders.
+
+Follow Python best practices for file naming conventions (lowercase with underscores for modules, CamelCase for classes).
+Make sure that files contain all necessary imports and type hints. The code should be fully functional Python code. Ensure that code in different files are compatible with each other.
+Implement all code, if you are unsure, write a plausible implementation in Python.
+Include a requirements.txt file for package dependencies.
+Before you finish, double check that all parts of the architecture are present in the Python files.
+
+When you are done, conclude with "This concludes a fully working Python implementation."

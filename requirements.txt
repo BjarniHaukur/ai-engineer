@@ -1,4 +1,0 @@
-python-dotenv
-requests
-tqdm
-PyMuPDF==1.23.8
