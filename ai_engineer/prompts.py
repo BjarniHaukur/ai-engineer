@@ -47,9 +47,18 @@ Python toolbelt preferences:
 
 sandbox_prompt = '''
 
-The entry point for your code is the "main.py" file.
+The entry point for your code is the "src/main.py" file.
 Don't include any other text or example usages in your response.
 
 '''
 
 fence = ''' ########################################################################## '''
+
+
+gen_bash_script_pre_prompt = '''
+
+Make a unix script that
+a) installs dependencies
+b) runs the main file
+
+'''
