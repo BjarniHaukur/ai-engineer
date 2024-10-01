@@ -43,12 +43,11 @@ class File:
 
 import re
 def find_files(text) -> list[File]:
-    regex = r"```\S*\n(.+?)```"
+    regex = r"```(\S*)\n(.+?)```"
     matches = re.findall(regex, text, re.DOTALL)
     files: list[File] = []
     for match in matches:
-        file_name = match.split("\n")[0]
-        content = "\n".join(match.split("\n")[1:])
+        file_name, content = match
         files.append(File(file_name, content))
     return files
 
