@@ -119,4 +119,4 @@ class Coder:
 
 if __name__ == "__main__":
     coder = Coder()
-    coder.implement("Create a simple web server that listens on port 8000 and returns 'Hello, World!'", ["main.py", "requirements.txt"])
+    coder.implement("Create a simple web server that listens on port 8000 and returns 'Hello, World!'")
