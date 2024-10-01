@@ -1,8 +1,0 @@
-torch
-torchvision
-pytorch-lightning
-wandb
-torch
-torchvision
-pytorch-lightning
-wandb

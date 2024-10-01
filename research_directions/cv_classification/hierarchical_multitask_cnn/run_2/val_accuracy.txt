@@ -1,2 +1,0 @@
-Superclass Accuracy: 0.5363256335258484
-Subclass Accuracy: 0.4815883934497833

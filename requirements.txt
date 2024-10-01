@@ -2,10 +2,3 @@ python-dotenv
 requests
 tqdm
 PyMuPDF==1.23.8
-datasets
-
-aider-chat
-torch
-torchvision
-wandb
-lightning

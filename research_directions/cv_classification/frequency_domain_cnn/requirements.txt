@@ -1,5 +1,0 @@
-torch
-torchvision
-pytorch-lightning
-wandb
-scipy

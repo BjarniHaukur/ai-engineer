@@ -9,7 +9,7 @@ import os.path as osp
 import sys
 from subprocess import TimeoutExpired
 
-main_model = Model("gpt-4o")
+main_model = Model("openrouter/openai/gpt-4o-mini")
 
 MAX_RUNS = 3
 MAX_ITERS = 10
