@@ -22,18 +22,7 @@ class AI:
 
     @backoff.on_exception(backoff.expo, [openai.RateLimitError, anthropic.RateLimitError], max_tries=7, max_time=45)  # retry API call with increasing delay
     def next(self, messages:list[Message])->list[Message]:
-        messages = self._collapse_messages(messages)
         return messages + [self.llm.invoke(messages)]
-
-    def _collapse_messages(self, messages:list[Message])->list[Message]:
-        """ Combine subsequent messages of the same type """
-        collapsed = []
-        for message in messages:
-            if collapsed and isinstance(message, type(collapsed[-1])):
-                collapsed[-1].content += "\n" + message.content
-            else:
-                collapsed.append(message)
-        return collapsed
 
     def _create_chat_model(self)->BaseChatModel:
         if "gpt" in self.model_name or "o1" in self.model_name:
@@ -53,3 +42,17 @@ class AI:
             )
         else:
             raise ValueError(f"Unsupported model: {self.model_name}")
+
+
+
+
+
+    # def _collapse_messages(self, messages:list[Message])->list[Message]:
+    #     """ Combine subsequent messages of the same type """
+    #     collapsed = []
+    #     for message in messages:
+    #         if collapsed and isinstance(message, type(collapsed[-1])):
+    #             collapsed[-1].content += "\n" + message.content
+    #         else:
+    #             collapsed.append(message)
+    #     return collapsed
