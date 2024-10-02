@@ -1,29 +1,8 @@
-import re
-
 from langchain.schema import AIMessage, HumanMessage, SystemMessage
 
 from ai_engineer.ai import AI
+from ai_engineer.extract import chat_to_files_dict
 
-
-def chat_to_files_dict(chat:str)->dict[str, str]:
-    # Regex to match file paths and associated code blocks
-    regex = r"(\S+)\n\s*```[^\n]*\n(.+?)```"
-    matches = re.finditer(regex, chat, re.DOTALL)
-
-    files_dict = {}
-    for match in matches:
-        # Clean and standardize the file path
-        path = re.sub(r'[\:<>"|?*]', "", match.group(1))
-        path = re.sub(r"^\[(.*)\]$", r"\1", path)
-        path = re.sub(r"^`(.*)`$", r"\1", path)
-        path = re.sub(r"[\]\:]$", "", path)
-
-        # Extract and clean the code content
-        content = match.group(2)
-
-        files_dict[path.strip()] = content.strip()
-
-    return files_dict
 
 
 def generate_code(ai:AI, prompt:str)->dict[str, str]:
@@ -39,7 +18,7 @@ def generate_code(ai:AI, prompt:str)->dict[str, str]:
 
     messages = ai.next(messages)
 
-    return chat_to_files_dict(messages[-1].content)
+    return chat_to_files_dict(messages[-1].content)  # TODO: if extracting fails, ask again!
 
 
 def fix_code():
