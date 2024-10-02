@@ -1,47 +1,18 @@
-from langchain.schema import AIMessage, HumanMessage, SystemMessage
+from pathlib import Path
+from langchain.schema import HumanMessage, SystemMessage
 
 from ai_engineer.ai import AI
-from ai_engineer.extract import chat_to_files_dict
+from ai_engineer.file import FileDict
+prompts = {
+    path.stem: path.read_text()  # fails if 'path' is not a file, expected behaviour
+    for path in Path("ai_engineer/prompts").iterdir()
+}
 
 
-
-def generate_code(ai:AI, prompt:str)->dict[str, str]:
-    roadmap = open("ai_engineer/prompts/roadmap").read()
-    generate = open("ai_engineer/prompts/generate").read()
-    file_format = open("ai_engineer/prompts/file_format").read()
-    philosophy = open("ai_engineer/prompts/philosophy").read()
-
+def generate_code(ai:AI, prompt:str)->FileDict:
     messages = [
-        SystemMessage(content=roadmap + generate.replace("FILE_FORMAT", file_format) + "\nUseful to know:\n" + philosophy),
+        SystemMessage(content=prompts["roadmap"] + prompts["generate"].replace("FILE_FORMAT", prompts["file_format"]) + "\nUseful to know:\n" + prompts["philosophy"]),
         HumanMessage(content=prompt),
     ]
-
     messages = ai.next(messages)
-
-    return chat_to_files_dict(messages[-1].content)  # TODO: if extracting fails, ask again!
-
-
-def fix_code():
-    pass
-
-def improve_code():
-    pass
-
-def run_code():
-    pass
-
-
-# def fix_code(ai:AI, prompt:str)->dict[str, str]:
-#     roadmap = open("ai_engineer/prompts/roadmap").read()
-#     improve = open("ai_engineer/prompts/improve").read()
-#     file_format_diff = open("ai_engineer/prompts/file_format_diff").read()
-#     philosophy = open("ai_engineer/prompts/philosophy").read()
-
-#     messages = [
-#         SystemMessage(content=roadmap + improve.replace("FILE_FORMAT", file_format_diff) + "\nUseful to know:\n" + philosophy),
-#         HumanMessage(content=prompt),
-#     ]
-
-#     messages = ai.next(messages)
-
-#     return chat_to_files_dict(messages[-1].content)
+    return FileDict.from_response(messages[-1].content)
