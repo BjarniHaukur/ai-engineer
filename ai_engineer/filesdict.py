@@ -1,14 +1,14 @@
 import re
 from pathlib import Path
 
-class FileDict(dict):
+class FilesDict(dict):
     @classmethod
     def from_response(cls, response:str):
         # Regex to match file paths and associated code blocks
         code_block_prefix_regex = r"(\S+)\n\s*```[^\n]*\n(.+?)```"
         matches = re.finditer(code_block_prefix_regex, response, re.DOTALL)
 
-        files_dict = {}
+        files_dict = cls()
         for match in matches:
             # Clean and standardize the file path
             path = re.sub(r'[\:<>"|?*]', "", match.group(1))
@@ -17,11 +17,11 @@ class FileDict(dict):
             path = re.sub(r"[\]\:]$", "", path)
 
             # Extract and clean the code content
-            content = match.group(2)
+            content = match.group(2).strip()
 
-            files_dict[path.strip()] = content.strip()
+            files_dict[Path(path)] = content  # fails if path is not a valid filename/path, does not check content for errors
 
-        return cls(files_dict)
+        return files_dict
         
     @classmethod
     def from_file(cls, root_path:str|Path):
@@ -36,7 +36,15 @@ class FileDict(dict):
 
         return cls(file_dict)
 
-    
+    def to_context(self, enumerate_lines:bool=False):
+        chat_str = ""
+        for file_name, file_content in self.items():
+            chat_str += f"{file_name}\n```"
+            for i, file_line in enumerate(file_content.split("\n")):
+                chat_str += f"{i+1} {file_line}\n" if enumerate_lines else f"{file_line}\n"
+            chat_str += "```\n\n"
+        return chat_str
+
     def to_file(self, root_path:str|Path):
         root_path = Path(root_path)
         root_path.mkdir(parents=True, exist_ok=True)
