@@ -19,7 +19,7 @@ class FilesDict(dict):
             # Extract and clean the code content
             content = match.group(2).strip()
 
-            files_dict[Path(path)] = content  # fails if path is not a valid filename/path, does not check content for errors
+            files_dict[path] = content 
 
         return files_dict
         
@@ -27,14 +27,14 @@ class FilesDict(dict):
     def from_file(cls, root_path:str|Path):
         root_path = Path(root_path)
 
-        file_dict = {}
+        files_dict = cls()
         for file_path in root_path.rglob('*'):
             if file_path.is_file():
                 relative_path = file_path.relative_to(root_path)
-                assert str(relative_path) not in file_dict, f"Duplicate file: {relative_path}"
-                file_dict[str(relative_path)] = file_path.read_text()
+                assert str(relative_path) not in files_dict, f"Duplicate file: {relative_path}"
+                files_dict[str(relative_path)] = file_path.read_text()
 
-        return cls(file_dict)
+        return files_dict
 
     def to_context(self, enumerate_lines:bool=False):
         chat_str = ""
@@ -43,6 +43,7 @@ class FilesDict(dict):
             for i, file_line in enumerate(file_content.split("\n")):
                 chat_str += f"{i+1} {file_line}\n" if enumerate_lines else f"{file_line}\n"
             chat_str += "```\n\n"
+            
         return chat_str
 
     def to_file(self, root_path:str|Path):
