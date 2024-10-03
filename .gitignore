@@ -1,4 +1,7 @@
 .env
 .venv
 venv
+outputs/
+exec/
+
 __pycache__/
