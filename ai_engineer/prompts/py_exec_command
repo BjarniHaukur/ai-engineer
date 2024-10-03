@@ -1,0 +1,17 @@
+Your task is to construct a one line command using UV for python execution.
+
+e.g. 'uv run <target_file> <optional arguments>'
+
+UV will manage packages and virtual environment
+
+Format the command in a code block like this:
+
+bash.sh
+```
+uv run src/main.py
+```
+
+Here's information about a codebase that is currently on disk in the current folder.
+
+
+        
