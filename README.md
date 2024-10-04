@@ -16,9 +16,9 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 uv sync
 ```
 
-**Activate the virtual environment:**
+**Alternatively, let uv install the dependencies when you run the project:**
 ```
-source .venv/bin/activate
+uv run <script>.py
 ```
 
 **Adding dependencies:**
