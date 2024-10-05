@@ -15,8 +15,8 @@ class ChatOpenRouter(ChatOpenAI):
         super().__init__(openai_api_base="https://openrouter.ai/api/v1", openai_api_key=os.getenv("OPENROUTER_API_KEY"), model_name=model_name, **kwargs)
 
 class AI:
-    def __init__(self, model_name:str, temperature:float=0.7):
-        self.model_name, self.temperature = model_name, temperature
+    def __init__(self, model_name:str, temperature:float=0.7, stdout:bool=False):
+        self.model_name, self.temperature, self.stdout = model_name, temperature, stdout
         self.llm = self._create_chat_model()
 
     #@backoff.on_exception(backoff.expo, [openai.RateLimitError, anthropic.RateLimitError], max_tries=7, max_time=45)  # retry API call with increasing delay
@@ -28,7 +28,7 @@ class AI:
             return ChatOpenRouter(
                 model_name=self.model_name,
                 temperature=self.temperature,
-                streaming=True,
+                # streaming=True,  # doesn't work
                 # callbacks=[StreamingStdOutCallbackHandler()],  # basically a hack to get o1 early, 
             )
         elif "gpt" in self.model_name:
@@ -36,14 +36,14 @@ class AI:
                 model=self.model_name,
                 temperature=self.temperature,
                 streaming=True,
-                callbacks=[StreamingStdOutCallbackHandler()],
+                callbacks=[StreamingStdOutCallbackHandler()] if self.stdout else [],
             )
         elif "claude" in self.model_name:
             return ChatAnthropic(
                 model=self.model_name,
                 temperature=self.temperature,
                 streaming=True,
-                callbacks=[StreamingStdOutCallbackHandler()],
+                callbacks=[StreamingStdOutCallbackHandler()] if self.stdout else [],
                 max_tokens_to_sample=4096,
             )
         else:

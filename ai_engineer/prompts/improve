@@ -6,7 +6,7 @@ FILE_FORMAT
 As far as compatible with the user request, start with the "entrypoint" file, then go to the ones that are imported by that file, and so on.
 Please note that the code should be fully functional. No placeholders.
 
-Follow a language and framework appropriate best practice file naming convention.
+Follow Python best practices for file naming conventions (lowercase with underscores for modules, CamelCase for classes).
 Make sure that files contain all imports, types etc.  The code should be fully functional. Make sure that code in different files are compatible with each other.
 Ensure to implement all code, if you are unsure, write a plausible implementation.
 Include module dependency or package manager dependency definition file.
