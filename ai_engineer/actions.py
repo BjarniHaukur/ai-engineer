@@ -17,7 +17,7 @@ prompts = {
 
 def generate_code(ai:AI, prompt:str)->FilesDict:
     messages = [
-        SystemMessage(content=prompts["roadmap"] + prompts["generate"].replace("FILE_FORMAT", prompts["file_format"]) + "\nUseful to know:\n" + prompts["philosophy"]),
+        SystemMessage(content=prompts["roadmap"] + prompts["generate"].replace("FILE_FORMAT", prompts["format"]) + "\nUseful to know:\n" + prompts["philosophy"]),
         HumanMessage(content=prompt),
     ]
     messages = ai.next(messages)
@@ -25,7 +25,7 @@ def generate_code(ai:AI, prompt:str)->FilesDict:
 
 def generate_improvement(ai:AI, error:str, files_dict:FilesDict)->FilesDict:
     messages = [
-        SystemMessage(content=prompts["roadmap"] + prompts["improve"].replace("FILE_FORMAT", prompts["file_format_diff"]) + "\nUseful to know:\n" + prompts["philosophy"]),
+        SystemMessage(content=prompts["roadmap"] + prompts["improve"].replace("FILE_FORMAT", prompts["format_diff"]) + "\nUseful to know:\n" + prompts["philosophy"]),
         HumanMessage(content=f"Error: {error}\n\nFiles:\n{files_dict.to_context(enumerate_lines=True)}"),
     ]
 
@@ -34,7 +34,7 @@ def generate_improvement(ai:AI, error:str, files_dict:FilesDict)->FilesDict:
 
 def generate_bash(ai:AI, files_dict:FilesDict)->str:
     messages = [
-        SystemMessage(content= prompts["py_exec_command"]),
+        SystemMessage(content= prompts["entrypoint"]),
         HumanMessage(content= "Here is the codebase:\n\n" + files_dict.to_context()),
     ]
     messages = ai.next(messages)    
