@@ -6,9 +6,9 @@ from langchain.schema import HumanMessage, SystemMessage
 from ai_engineer.ai import AI
 from ai_engineer.filesdict import FilesDict
 from ai_engineer.execution_env import ExecutionEnv
-from ai_engineer.constants import RUN_COMMAND
 
 OUTPUT_DIR = Path(".." if os.path.exists("../.git") else ".") / "outputs"
+RUN_COMMAND = 'run_command'
 
 prompts = {
     path.stem: path.read_text()  # fails if 'path' is not a file, expected behaviour
