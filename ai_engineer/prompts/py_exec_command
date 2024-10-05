@@ -1,17 +1,12 @@
-Your task is to construct a one line command using UV for python execution.
+Your task is to construct a bash command for running a given python project using UV.
 
-e.g. 'uv run <target_file> <optional arguments>'
+Format:
+uv pip install -r <requirements_file> (optional)
+uv run <target_file> <optional arguments>
 
-UV will manage packages and virtual environment
+Output the command in a code block.
 
-Format the command in a code block like this:
-
-bash.sh
 ```
-uv run src/main.py
+CODE
 ```
-
-Here's information about a codebase that is currently on disk in the current folder.
-
-
-        
+Note: The target file and any arguments should be based on the current project structure.

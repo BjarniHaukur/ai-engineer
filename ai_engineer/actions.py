@@ -8,7 +8,6 @@ from ai_engineer.filesdict import FilesDict
 from ai_engineer.execution_env import ExecutionEnv
 
 OUTPUT_DIR = Path(".." if os.path.exists("../.git") else ".") / "outputs"
-RUN_COMMAND = 'run_command'
 
 prompts = {
     path.stem: path.read_text()  # fails if 'path' is not a file, expected behaviour
@@ -33,29 +32,13 @@ def generate_improvement(ai:AI, error:str, files_dict:FilesDict)->FilesDict:
     messages = ai.next(messages)
     return FilesDict.from_response(messages[-1].content, root_path=OUTPUT_DIR)
 
-def generate_exec_command(ai:AI, files_dict:FilesDict)->FilesDict:
+def generate_bash(ai:AI, files_dict:FilesDict)->str:
     messages = [
         SystemMessage(content= prompts["py_exec_command"]),
-        HumanMessage(
-            content= 
-                    "\nInformation about the codebase:\n\n"
-                     + files_dict.to_context()
-        ),
+        HumanMessage(content= "Here is the codebase:\n\n" + files_dict.to_context()),
     ]
-    messages = ai.next(messages)
-    response = messages[-1].content.strip()
-    
+    messages = ai.next(messages)    
+    response = messages[-1].content
     regex = r"```\S*\n(.+?)```"
     matches = re.finditer(regex, response, re.DOTALL)
-    files_dict[RUN_COMMAND] = "\n".join(match.group(1) for match in matches)
-    
-    return files_dict
-
-def run_code(ai:AI, env:ExecutionEnv, files_dict:FilesDict):
-    files_dict = generate_exec_command(ai, files_dict)
-    env.upload(files_dict)
-    assert RUN_COMMAND in files_dict, "Entrypoint not found"
-    stdout, stderr, returncode = env.run(files_dict[RUN_COMMAND])
-    return files_dict, stdout, stderr, returncode
-
-    
+    return next(matches).group(1)

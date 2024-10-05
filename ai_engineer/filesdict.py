@@ -33,7 +33,7 @@ class FilesDict(dict):
         return files_dict
 
     @classmethod
-    def from_file(cls, root_path:str|Path):
+    def from_folder(cls, root_path:str|Path):
         files_dict = cls(root_path)
         for file_path in files_dict.root_path.rglob('*'):
             if is_inconsequential(file_path): continue  # skip things like .DS_Store

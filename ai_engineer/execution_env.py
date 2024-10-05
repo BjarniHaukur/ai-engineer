@@ -1,29 +1,24 @@
-import subprocess
 import time
+import subprocess
 
 from pathlib import Path
 from typing import Optional, Tuple
 
-from ai_engineer.filesdict import FilesDict
 
 class ExecutionEnv:
-    def __init__(self, working_dir:str|Path):
+    def __init__(self, working_dir:str|Path, stdout:bool=False, stderr:bool=False):
         self.working_dir = Path(working_dir)
-    
-    def upload(self, files_dict:FilesDict):
-        files_dict.to_file(self.working_dir)
-
-        return self
+        self.stdout, self.stderr = stdout, stderr
     
     def popen(self, command: str) -> subprocess.Popen:
-        p = subprocess.Popen(
+        return subprocess.Popen(
             command,
             shell=True,
             cwd=self.working_dir,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         )
-        return p
+        
 
     def run(self, command:str, timeout:Optional[int]=None) -> Tuple[str, str, int]:
         start = time.time()
@@ -47,8 +42,8 @@ class ExecutionEnv:
                     stdout, stderr = p.communicate(timeout=0.1)
                     stdout_full += stdout.decode("utf-8")
                     stderr_full += stderr.decode("utf-8")
-                    print(stdout.decode("utf-8"), end="")
-                    print(stderr.decode("utf-8"), end="")
+                    if self.stdout: print(stdout.decode("utf-8"), end="")
+                    if self.stderr: print(stderr.decode("utf-8"), end="")
                 except subprocess.TimeoutExpired:
                     # If communicate times out, continue the loop
                     continue
@@ -62,8 +57,8 @@ class ExecutionEnv:
             stdout, stderr = p.communicate()
             stdout_full += stdout.decode("utf-8")
             stderr_full += stderr.decode("utf-8")
-            print(stdout.decode("utf-8"), end="")
-            print(stderr.decode("utf-8"), end="")
+            if self.stdout: print(stdout.decode("utf-8"), end="")
+            if self.stderr: print(stderr.decode("utf-8"), end="")
             print("\n--- Finished run ---\n")
 
         return stdout_full, stderr_full, p.returncode
