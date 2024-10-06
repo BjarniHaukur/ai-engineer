@@ -28,7 +28,7 @@ class FilesDict(dict):
             # Extract and clean the code content
             content = match.group(2).strip()
 
-            files_dict[path] = content 
+            files_dict[path] = content  # creates the file on disk
 
         return files_dict
 
@@ -54,13 +54,16 @@ class FilesDict(dict):
             chat_str += "```\n\n"
             
         return chat_str
-    
+
+    def __contains__(self, key:str|Path)->bool:
+        return super().__contains__(str(key))
+
     def __getitem__(self, key:str|Path)->str:
         return super().__getitem__(str(key))
 
     def __setitem__(self, key:str|Path, value:str):
         path = self.root_path / key
-        if key not in self: path.parent.mkdir(parents=True, exist_ok=True)
+        path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(value)
         super().__setitem__(str(key), value)
 
@@ -78,6 +81,6 @@ class FilesDict(dict):
         if all(is_inconsequential(path) for path in self.root_path.rglob("*")):  # if no important files are left
             shutil.rmtree(self.root_path)
         else:
-            print(f"Not deleting {self.root_path}. It still contains files not in the files_dict.")
+            raise Exception(f"Not deleting {self.root_path}. It still contains files not in the files_dict.")
 
 
