@@ -2,9 +2,17 @@ import subprocess
 import time
 
 from pathlib import Path
-from typing import Optional, Tuple
+from typing import Optional
+from dataclasses import dataclass
 
 from ai_engineer.filesdict import FilesDict
+
+
+@dataclass
+class ExecutionResult:
+    stdout: str
+    stderr: str
+    returncode: int
 
 class ExecutionEnv:
     def __init__(self, working_dir:str|Path):
@@ -25,7 +33,7 @@ class ExecutionEnv:
         )
         return p
 
-    def run(self, command:str, timeout:Optional[int]=None) -> Tuple[str, str, int]:
+    def run(self, command:str, timeout:Optional[int]=None) -> ExecutionResult:
         start = time.time()
         
         p = self.popen(command)
@@ -66,6 +74,6 @@ class ExecutionEnv:
             print(stderr.decode("utf-8"), end="")
             print("\n--- Finished run ---\n")
 
-        return stdout_full, stderr_full, p.returncode
+        return ExecutionResult(stdout_full, stderr_full, p.returncode)
 
 
