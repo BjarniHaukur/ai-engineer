@@ -9,8 +9,8 @@ DiffType = Literal["new", "deleted", "same", "renamed"]
 
 class Hunk:
     def __init__(self, start_line_pre:int, hunk_len_pre:int, start_line_post:int, hunk_len_post:int, content:str):
-        self.start_line_pre, self.hunk_len_pre = start_line_pre-1, hunk_len_pre  # 0 indexed
-        self.start_line_post, self.hunk_len_post = start_line_post-1, hunk_len_post
+        self.start_idx_pre, self.hunk_len_pre = start_line_pre-1, hunk_len_pre  # 0 indexed
+        self.start_idx_post, self.hunk_len_post = start_line_post-1, hunk_len_post
         self.content = content.lstrip("\n")
 
         self.lines = [line[1:] for line in self.content.split("\n")]
@@ -23,16 +23,24 @@ class Hunk:
         return self.hunk_len_post - self.hunk_len_pre
 
     def increment_lines(self, increment:int):
-        self.start_line_pre += increment
-        self.start_line_post += increment
+        self.start_idx_pre += increment
+        self.start_idx_post += increment
 
-    def _verify_start_line(self, file_lines:list[str])->int:
+    def _verify_start_line(self, file_lines: list[str], index_delta: int = 5) -> int:
+        start = max(0, self.start_idx_pre - index_delta)
+        end = min(len(file_lines), self.start_idx_pre + index_delta)
+        
         if self.types[0] in [" ", "-"]:
-            real_idx = file_lines.index(self.lines[0])
+            try:
+                real_idx = file_lines.index(self.lines[0], start, end)
+            except ValueError:
+                raise ValueError(f"Could not find the start line within ±{index_delta} lines of the specified start line.")
         else:
-            real_idx = max(0, self.start_line_pre-1)  # if first is add then we start one back to keep the logic the same
+            real_idx = max(0, self.start_idx_pre - 1)  # if first is add then we start one back to keep the logic the same
 
-        if real_idx+1 != self.start_line_pre: print("Start line not same as specified")
+        if real_idx + 1 != self.start_idx_pre:
+            print(f"Warning: Start line found at {real_idx + 1}, but {self.start_idx_pre} was specified.")
+
         return real_idx
 
     def apply(self, file:str)->str:
@@ -40,25 +48,35 @@ class Hunk:
 
         real_start_idx = self._verify_start_line(file_lines)
 
-        for i, (line, line_type) in enumerate(zip(self.lines, self.types)):
-            real_idx = real_start_idx + i
+        file_idx = real_start_idx
+        self_idx = 0
+        
+        while self_idx < len(self.lines):
+            line = self.lines[self_idx]
+            line_type = self.types[self_idx]
+            file_idx = min(file_idx, len(file_lines)-1)  # keep appending
+
             if line_type == " ":
-                assert file_lines[real_idx] == line, "Line not same as specified"
+                assert file_lines[file_idx].strip() == line.strip(), f"Line not same as specified (ignoring leading/trailing whitespace)\n{file_lines[file_idx]}\n{line}"
+                file_idx += 1
+                self_idx += 1
             elif line_type == "-":
-                del file_lines[real_idx]
-                real_start_idx -= 1
+                del file_lines[file_idx]
+                self_idx += 1
             elif line_type == "+":
-                file_lines.insert(real_idx, line)
+                file_lines.insert(file_idx, line)
+                file_idx += 1
+                self_idx += 1
             else:
                 raise ValueError(f"Invalid line type: {line_type}")
-        
+
         return "\n".join(file_lines)
         
     def __str__(self):
-        return f"@@ -{self.start_line_pre},{self.hunk_len_pre} +{self.start_line_post},{self.hunk_len_post} @@\n{self.content}"
+        return f"@@ -{self.start_idx_pre + 1},{self.hunk_len_pre} +{self.start_idx_post + 1},{self.hunk_len_post} @@\n{self.content}"
     
     def __repr__(self):
-        return f"Hunk(start_line_pre={self.start_line_pre}, hunk_len_pre={self.hunk_len_pre}, start_line_post={self.start_line_post}, hunk_len_post={self.hunk_len_post})"
+        return f"Hunk(start_idx_pre={self.start_idx_pre}, hunk_len_pre={self.hunk_len_pre}, start_idx_post={self.start_idx_post}, hunk_len_post={self.hunk_len_post})"
 
 def extract_all_hunks(diff:str)->list[Hunk]:
     hunk_pattern = r'@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@([\s\S]*?)(?=\n@@|\Z)'
@@ -80,7 +98,7 @@ def extract_all_hunks(diff:str)->list[Hunk]:
 class Diff:
     def __init__(self, pre_name:str, post_name:str, hunks:list[Hunk]):
         self.pre_name, self.post_name = pre_name, post_name
-        self.hunks = sorted(hunks, key=lambda x: x.start_line_pre)
+        self.hunks = sorted(hunks, key=lambda x: x.start_idx_pre)
 
     @property
     def diff_type(self)->DiffType:
@@ -130,11 +148,11 @@ class Diff:
         # diff type is "same"
         content = files_dict[self.post_name]
 
-        lines_changed = 0
+        shift = 0
         for hunk in self.hunks:
-            hunk.increment_lines(lines_changed)
+            hunk.increment_lines(shift)
             content = hunk.apply(content)
-            lines_changed += hunk.num_lines_changed
+            shift += hunk.num_lines_changed
         
         print(f"Successfully applied diff to {self.post_name}")
         files_dict[self.post_name] = content  # sync to disk
